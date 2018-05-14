@@ -1,0 +1,412 @@
+<!DOCTYPE Project SYSTEM "http://www.slickedit.com/dtd/vse/10.0/vpj.dtd">
+<Project
+    Version="10.0"
+    VendorName="SlickEdit"
+    TemplateName="GNU C/C++"
+    WorkingDir="."
+    BuildSystem="vsbuild">
+    <Config
+        Name="Debug"
+        Type="gnuc"
+        DebugCallbackName="gdb"
+        Version="1"
+        OutputFile="%bdTuRio.exe"
+        CompilerConfigName="Latest Version">
+        <Menu>
+            <Target
+                Name="Compile"
+                MenuCaption="&amp;Compile"
+                Dialog="_gnuc_options_form Compile"
+                CaptureOutputWith="ProcessBuffer"
+                Deletable="0"
+                OutputExts="*.o"
+                SaveOption="SaveCurrent"
+                RunFromDir="%rw">
+                <Exec CmdLine='gcc -c %xup  %defd -g -o "%bd%n%oe" %i "%f"'/>
+            </Target>
+            <Target
+                Name="Link"
+                MenuCaption="&amp;Link"
+                ShowOnMenu="Never"
+                Dialog="_gnuc_options_form Link"
+                CaptureOutputWith="ProcessBuffer"
+                Deletable="0"
+                SaveOption="SaveCurrent"
+                RunFromDir="%rw">
+                <Exec CmdLine='gcc %xup -g -o "%o" %f %libs'/>
+            </Target>
+            <Target
+                Name="Build"
+                MenuCaption="&amp;Build"
+                Dialog="_gnuc_options_form Compile"
+                CaptureOutputWith="ProcessBuffer"
+                Deletable="0"
+                SaveOption="SaveWorkspaceFiles"
+                RunFromDir="%rw">
+                <Exec CmdLine='"%(VSLICKBIN1)vsbuild" "%w" "%r" -t build'/>
+            </Target>
+            <Target
+                Name="Rebuild"
+                MenuCaption="&amp;Rebuild"
+                Dialog="_gnuc_options_form Compile"
+                CaptureOutputWith="ProcessBuffer"
+                Deletable="0"
+                SaveOption="SaveWorkspaceFiles"
+                RunFromDir="%rw">
+                <Exec CmdLine='"%(VSLICKBIN1)vsbuild" "%w" "%r" -t rebuild'/>
+            </Target>
+            <Target
+                Name="Debug"
+                MenuCaption="&amp;Debug"
+                Dialog="_gnuc_options_form Run/Debug"
+                BuildFirst="1"
+                CaptureOutputWith="ProcessBuffer"
+                Deletable="0"
+                SaveOption="SaveNone"
+                RunFromDir="%rw">
+                <Exec CmdLine='vsdebugio -prog "%o"'/>
+            </Target>
+            <Target
+                Name="Execute"
+                MenuCaption="E&amp;xecute"
+                Dialog="_gnuc_options_form Run/Debug"
+                BuildFirst="1"
+                CaptureOutputWith="ProcessBuffer"
+                Deletable="0"
+                SaveOption="SaveWorkspaceFiles"
+                RunFromDir="%rw">
+                <Exec CmdLine='"%o"'/>
+            </Target>
+            <Target
+                Name="dash"
+                MenuCaption="-"
+                Deletable="0">
+                <Exec/>
+            </Target>
+            <Target
+                Name="GNU C Options"
+                MenuCaption="GNU C &amp;Options..."
+                ShowOnMenu="HideIfNoCmdLine"
+                Deletable="0"
+                SaveOption="SaveNone">
+                <Exec
+                    CmdLine="gnucoptions"
+                    Type="Slick-C"/>
+            </Target>
+        </Menu>
+        <Rules Name="Compile">
+            <Rule
+                InputExts="*.ada"
+                OutputExts="*.o"
+                LinkObject="1">
+                <Exec CmdLine='gnat -g -c -o "%bd%n.o" "%f"'/>
+            </Rule>
+            <Rule
+                InputExts="*.adb"
+                OutputExts="*.o"
+                LinkObject="1">
+                <Exec CmdLine='gnat -g -c -o "%bd%n.o" "%f"'/>
+            </Rule>
+            <Rule
+                InputExts="*.f"
+                OutputExts="*.o"
+                LinkObject="1">
+                <Exec CmdLine='gfortran -c -g -o "%bd%n.o" "%f"'/>
+            </Rule>
+            <Rule
+                InputExts="*.f90"
+                OutputExts="*.o"
+                LinkObject="1">
+                <Exec CmdLine='gfortran -c -g -o "%bd%n.o" "%f"'/>
+            </Rule>
+            <Rule
+                InputExts="*.d"
+                OutputExts="*.o"
+                LinkObject="1">
+                <Exec CmdLine='gdc -c -g -o "%bd%n.o" "%f"'/>
+            </Rule>
+        </Rules>
+        <List Name="GNUC Options">
+            <Item
+                Name="LinkerOutputType"
+                Value="Executable"/>
+        </List>
+    </Config>
+    <Config
+        Name="Release"
+        Type="gnuc"
+        DebugCallbackName="gdb"
+        Version="1"
+        OutputFile="%bdTuRio.exe"
+        CompilerConfigName="Latest Version">
+        <Menu>
+            <Target
+                Name="Compile"
+                MenuCaption="&amp;Compile"
+                Dialog="_gnuc_options_form Compile"
+                CaptureOutputWith="ProcessBuffer"
+                Deletable="0"
+                OutputExts="*.o"
+                SaveOption="SaveCurrent"
+                RunFromDir="%rw">
+                <Exec CmdLine='gcc -c %xup %defd -o "%bd%n%oe" %i "%f"'/>
+            </Target>
+            <Target
+                Name="Link"
+                MenuCaption="&amp;Link"
+                ShowOnMenu="Never"
+                Dialog="_gnuc_options_form Link"
+                CaptureOutputWith="ProcessBuffer"
+                Deletable="0"
+                SaveOption="SaveCurrent"
+                RunFromDir="%rw">
+                <Exec CmdLine='gcc %xup -o "%o" %f %libs'/>
+            </Target>
+            <Target
+                Name="Build"
+                MenuCaption="&amp;Build"
+                Dialog="_gnuc_options_form Compile"
+                CaptureOutputWith="ProcessBuffer"
+                Deletable="0"
+                SaveOption="SaveWorkspaceFiles"
+                RunFromDir="%rw">
+                <Exec CmdLine='"%(VSLICKBIN1)vsbuild" "%w" "%r" -t build'/>
+            </Target>
+            <Target
+                Name="Rebuild"
+                MenuCaption="&amp;Rebuild"
+                Dialog="_gnuc_options_form Compile"
+                CaptureOutputWith="ProcessBuffer"
+                Deletable="0"
+                SaveOption="SaveWorkspaceFiles"
+                RunFromDir="%rw">
+                <Exec CmdLine='"%(VSLICKBIN1)vsbuild" "%w" "%r" -t rebuild'/>
+            </Target>
+            <Target
+                Name="Debug"
+                MenuCaption="&amp;Debug"
+                Dialog="_gnuc_options_form Run/Debug"
+                BuildFirst="1"
+                CaptureOutputWith="ProcessBuffer"
+                Deletable="0"
+                SaveOption="SaveNone"
+                RunFromDir="%rw">
+                <Exec CmdLine='vsdebugio -prog "%o"'/>
+            </Target>
+            <Target
+                Name="Execute"
+                MenuCaption="E&amp;xecute"
+                Dialog="_gnuc_options_form Run/Debug"
+                BuildFirst="1"
+                CaptureOutputWith="ProcessBuffer"
+                Deletable="0"
+                SaveOption="SaveWorkspaceFiles"
+                RunFromDir="%rw">
+                <Exec CmdLine='"%o"'/>
+            </Target>
+            <Target
+                Name="dash"
+                MenuCaption="-"
+                Deletable="0">
+                <Exec/>
+            </Target>
+            <Target
+                Name="GNU C Options"
+                MenuCaption="GNU C &amp;Options..."
+                ShowOnMenu="HideIfNoCmdLine"
+                Deletable="0"
+                SaveOption="SaveNone">
+                <Exec
+                    CmdLine="gnucoptions"
+                    Type="Slick-C"/>
+            </Target>
+        </Menu>
+        <Rules Name="Compile">
+            <Rule
+                InputExts="*.ada"
+                OutputExts="*.o"
+                LinkObject="1">
+                <Exec CmdLine='gnat -O -c -o "%bd%n.o" "%f"'/>
+            </Rule>
+            <Rule
+                InputExts="*.adb"
+                OutputExts="*.o"
+                LinkObject="1">
+                <Exec CmdLine='gnat -O -c -o "%bd%n.o" "%f"'/>
+            </Rule>
+            <Rule
+                InputExts="*.f"
+                OutputExts="*.o"
+                LinkObject="1">
+                <Exec CmdLine='gfortran -O -g -o "%bd%n.o" "%f"'/>
+            </Rule>
+            <Rule
+                InputExts="*.f90"
+                OutputExts="*.o"
+                LinkObject="1">
+                <Exec CmdLine='gfortran -O -g -o "%bd%n.o" "%f"'/>
+            </Rule>
+            <Rule
+                InputExts="*.d"
+                OutputExts="*.o"
+                LinkObject="1">
+                <Exec CmdLine='gdc -c -g -o "%bd%n.o" "%f"'/>
+            </Rule>
+        </Rules>
+        <List Name="GNUC Options">
+            <Item
+                Name="LinkerOutputType"
+                Value="Executable"/>
+        </List>
+    </Config>
+    <CustomFolders>
+        <Folder
+            Name="Source Files"
+            Filters="*.c;*.C;*.cc;*.cpp;*.cp;*.cxx;*.c++;*.prg;*.pas;*.dpr;*.asm;*.s;*.bas;*.java;*.cs;*.sc;*.e;*.cob;*.html;*.rc;*.tcl;*.py;*.pl;*.d;*.m;*.mm;*.go;*.groovy;*.gsh"
+            GUID="{94994F6B-48FE-4E5B-5588-3D991A890D8B}"></Folder>
+        <Folder
+            Name="Header Files"
+            Filters="*.h;*.H;*.hh;*.hpp;*.hxx;*.h++;*.inc;*.sh;*.cpy;*.if"
+            GUID="{921E7742-3BC4-4465-0CC9-8DB5CAD6F199}"></Folder>
+        <Folder
+            Name="Resource Files"
+            Filters="*.ico;*.cur;*.dlg"
+            GUID="{DC984073-6AB0-436B-E474-F2E1DF9DD5AA}"/>
+        <Folder
+            Name="Bitmaps"
+            Filters="*.bmp"
+            GUID="{35993214-2351-4DF9-E859-3462E44413AB}"/>
+        <Folder
+            Name="Other Files"
+            Filters=""
+            GUID="{19280256-6AB1-4735-41B0-C80A71DF6CB1}"/>
+    </CustomFolders>
+    <Files AutoFolders="PackageView">
+        <Folder Name="../Libraries/CMSIS">
+            <F N="../Libraries/CMSIS/cmsis_armcc.h"/>
+            <F N="../Libraries/CMSIS/cmsis_compiler.h"/>
+            <F N="../Libraries/CMSIS/core_cm3.h"/>
+            <F N="../Libraries/CMSIS/misc.c"/>
+            <F N="../Libraries/CMSIS/misc.h"/>
+        </Folder>
+        <Folder Name="../Libraries/StdPeriph_Driver/inc">
+            <F N="../Libraries/StdPeriph_Driver/inc/misc.h"/>
+            <F N="../Libraries/StdPeriph_Driver/inc/stm32f10x_adc.h"/>
+            <F N="../Libraries/StdPeriph_Driver/inc/stm32f10x_bkp.h"/>
+            <F N="../Libraries/StdPeriph_Driver/inc/stm32f10x_can.h"/>
+            <F N="../Libraries/StdPeriph_Driver/inc/stm32f10x_cec.h"/>
+            <F N="../Libraries/StdPeriph_Driver/inc/stm32f10x_crc.h"/>
+            <F N="../Libraries/StdPeriph_Driver/inc/stm32f10x_dac.h"/>
+            <F N="../Libraries/StdPeriph_Driver/inc/stm32f10x_dbgmcu.h"/>
+            <F N="../Libraries/StdPeriph_Driver/inc/stm32f10x_dma.h"/>
+            <F N="../Libraries/StdPeriph_Driver/inc/stm32f10x_exti.h"/>
+            <F N="../Libraries/StdPeriph_Driver/inc/stm32f10x_flash.h"/>
+            <F N="../Libraries/StdPeriph_Driver/inc/stm32f10x_fsmc.h"/>
+            <F N="../Libraries/StdPeriph_Driver/inc/stm32f10x_gpio.h"/>
+            <F N="../Libraries/StdPeriph_Driver/inc/stm32f10x_i2c.h"/>
+            <F N="../Libraries/StdPeriph_Driver/inc/stm32f10x_iwdg.h"/>
+            <F N="../Libraries/StdPeriph_Driver/inc/stm32f10x_pwr.h"/>
+            <F N="../Libraries/StdPeriph_Driver/inc/stm32f10x_rcc.h"/>
+            <F N="../Libraries/StdPeriph_Driver/inc/stm32f10x_rtc.h"/>
+            <F N="../Libraries/StdPeriph_Driver/inc/stm32f10x_sdio.h"/>
+            <F N="../Libraries/StdPeriph_Driver/inc/stm32f10x_spi.h"/>
+            <F N="../Libraries/StdPeriph_Driver/inc/stm32f10x_tim.h"/>
+            <F N="../Libraries/StdPeriph_Driver/inc/stm32f10x_usart.h"/>
+            <F N="../Libraries/StdPeriph_Driver/inc/stm32f10x_wwdg.h"/>
+        </Folder>
+        <Folder Name="../Libraries/StdPeriph_Driver/src">
+            <F N="../Libraries/StdPeriph_Driver/src/misc.c"/>
+            <F N="../Libraries/StdPeriph_Driver/src/stm32f10x_adc.c"/>
+            <F N="../Libraries/StdPeriph_Driver/src/stm32f10x_bkp.c"/>
+            <F N="../Libraries/StdPeriph_Driver/src/stm32f10x_can.c"/>
+            <F N="../Libraries/StdPeriph_Driver/src/stm32f10x_cec.c"/>
+            <F N="../Libraries/StdPeriph_Driver/src/stm32f10x_crc.c"/>
+            <F N="../Libraries/StdPeriph_Driver/src/stm32f10x_dac.c"/>
+            <F N="../Libraries/StdPeriph_Driver/src/stm32f10x_dbgmcu.c"/>
+            <F N="../Libraries/StdPeriph_Driver/src/stm32f10x_dma.c"/>
+            <F N="../Libraries/StdPeriph_Driver/src/stm32f10x_exti.c"/>
+            <F N="../Libraries/StdPeriph_Driver/src/stm32f10x_flash.c"/>
+            <F N="../Libraries/StdPeriph_Driver/src/stm32f10x_fsmc.c"/>
+            <F N="../Libraries/StdPeriph_Driver/src/stm32f10x_gpio.c"/>
+            <F N="../Libraries/StdPeriph_Driver/src/stm32f10x_i2c.c"/>
+            <F N="../Libraries/StdPeriph_Driver/src/stm32f10x_iwdg.c"/>
+            <F N="../Libraries/StdPeriph_Driver/src/stm32f10x_pwr.c"/>
+            <F N="../Libraries/StdPeriph_Driver/src/stm32f10x_rcc.c"/>
+            <F N="../Libraries/StdPeriph_Driver/src/stm32f10x_rtc.c"/>
+            <F N="../Libraries/StdPeriph_Driver/src/stm32f10x_sdio.c"/>
+            <F N="../Libraries/StdPeriph_Driver/src/stm32f10x_spi.c"/>
+            <F N="../Libraries/StdPeriph_Driver/src/stm32f10x_tim.c"/>
+            <F N="../Libraries/StdPeriph_Driver/src/stm32f10x_usart.c"/>
+            <F N="../Libraries/StdPeriph_Driver/src/stm32f10x_wwdg.c"/>
+        </Folder>
+        <Folder Name="../ThirdLib/socket">
+            <F N="../ThirdLib/socket/socket.c"/>
+            <F N="../ThirdLib/socket/socket.h"/>
+            <F N="../ThirdLib/socket/types.h"/>
+            <F N="../ThirdLib/socket/utility.c"/>
+            <F N="../ThirdLib/socket/utility.h"/>
+            <F N="../ThirdLib/socket/w5500_config.c"/>
+            <F N="../ThirdLib/socket/w5500_config.h"/>
+        </Folder>
+        <Folder Name="../User/Api">
+            <F N="../User/Api/api_dataPro.c"/>
+            <F N="../User/Api/api_dataPro.h"/>
+            <F N="../User/Api/api_motor.c"/>
+            <F N="../User/Api/api_motor.h"/>
+        </Folder>
+        <Folder Name="../User/App">
+            <F N="../User/App/app_can.c"/>
+            <F N="../User/App/app_can.h"/>
+            <F N="../User/App/app_config.c"/>
+            <F N="../User/App/app_config.h"/>
+            <F N="../User/App/app_gpio.c"/>
+            <F N="../User/App/app_gpio.h"/>
+            <F N="../User/App/app_pt100.c"/>
+            <F N="../User/App/app_pt100.h"/>
+            <F N="../User/App/app_tcp.c"/>
+            <F N="../User/App/app_tcp.h"/>
+            <F N="../User/App/app_uart.c"/>
+            <F N="../User/App/app_uart.h"/>
+        </Folder>
+        <Folder Name="../User/Bfm">
+            <F N="../User/Bfm/bfm_w5500.c"/>
+            <F N="../User/Bfm/bfm_w5500.h"/>
+        </Folder>
+        <Folder Name="../User/Main">
+            <F N="../User/Main/include.h"/>
+            <F N="../User/Main/main.c"/>
+            <F N="../User/Main/main.h"/>
+            <F N="../User/Main/Param.c"/>
+            <F N="../User/Main/Param.h"/>
+            <F N="../User/Main/parameter.h"/>
+            <F N="../User/Main/stm32f10x.h"/>
+            <F N="../User/Main/stm32f10x_conf.h"/>
+            <F N="../User/Main/stm32f10x_it.c"/>
+            <F N="../User/Main/stm32f10x_it.h"/>
+            <F N="../User/Main/system_stm32f10x.c"/>
+            <F N="../User/Main/system_stm32f10x.h"/>
+        </Folder>
+        <Folder Name="../User/Ocp">
+            <F N="../User/Ocp/ocp_adc.c"/>
+            <F N="../User/Ocp/ocp_adc.h"/>
+            <F N="../User/Ocp/ocp_can.c"/>
+            <F N="../User/Ocp/ocp_can.h"/>
+            <F N="../User/Ocp/ocp_gpio.c"/>
+            <F N="../User/Ocp/ocp_gpio.h"/>
+            <F N="../User/Ocp/ocp_spi.c"/>
+            <F N="../User/Ocp/ocp_spi.h"/>
+            <F N="../User/Ocp/ocp_timer.c"/>
+            <F N="../User/Ocp/ocp_timer.h"/>
+            <F N="../User/Ocp/ocp_uart.c"/>
+            <F N="../User/Ocp/ocp_uart.h"/>
+        </Folder>
+        <Folder Name="../User/Task">
+            <F N="../User/Task/log.c"/>
+            <F N="../User/Task/log.h"/>
+            <F N="../User/Task/private.c"/>
+            <F N="../User/Task/private.h"/>
+            <F N="../User/Task/task.c"/>
+            <F N="../User/Task/task.h"/>
+        </Folder>
+    </Files>
+</Project>

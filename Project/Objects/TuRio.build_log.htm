@@ -1,0 +1,57 @@
+<html>
+<body>
+<pre>
+<h1>µVision Build Log</h1>
+<h2>Tool Versions:</h2>
+IDE-Version: ¦ÌVision V5.23.0.0
+Copyright (C) 2017 ARM Ltd and ARM Germany GmbH. All rights reserved.
+License Information: zzz HP Inc., HP Inc., LIC=BL2X7-EXFA8-22EL4-FN4A6-ABNKX-X4EUQ
+ 
+Tool Versions:
+Toolchain:       MDK-ARM Professional  Version: 5.23
+Toolchain Path:  D:\zhoutolls\MDK5\ARM\ARMCC\Bin
+C Compiler:      Armcc.exe V5.06 update 4 (build 422)
+Assembler:       Armasm.exe V5.06 update 4 (build 422)
+Linker/Locator:  ArmLink.exe V5.06 update 4 (build 422)
+Library Manager: ArmAr.exe V5.06 update 4 (build 422)
+Hex Converter:   FromElf.exe V5.06 update 4 (build 422)
+CPU DLL:         SARMCM3.DLL V5.23
+Dialog DLL:      DCM.DLL V1.15.0.0
+Target DLL:      Segger\JL2CM3.dll V2.99.23.0
+Dialog DLL:      TCM.DLL V1.27.0.0
+ 
+<h2>Project:</h2>
+D:\work\Rabbit\crio\soft\TuRio\Project\TuRio.uvprojx
+Project File Date:  05/11/2018
+
+<h2>Output:</h2>
+*** Using Compiler 'V5.06 update 4 (build 422)', folder: 'D:\zhoutolls\MDK5\ARM\ARMCC\Bin'
+Build target 'TuRio'
+compiling app_pt100.c...
+..\User\App\app_pt100.c(46): warning:  #175-D: subscript out of range
+    medianValue[5] = (((
+IVIDER_RESISTANCE + 
+EFERENCE_RESISTANCE) * sampValue * 1000)/
+D_GANI);
+..\User\App\app_pt100.c(47): warning:  #175-D: subscript out of range
+    medianValue[2] += medianValue[5];
+..\User\App\app_pt100.c(30): warning:  #177-D: variable "computerValue"  was declared but never referenced
+    uint32_t sampValue,computerValue = 0;
+..\User\App\app_pt100.c(52): warning: C4488E: write to variable 'medianValue' with offset out of bounds
+}
+..\User\App\app_pt100.c(52): warning: C4487E: read from variable 'medianValue' with offset out of bounds
+}
+..\User\App\app_pt100.c: 5 warnings, 0 errors
+linking...
+Program Size: Code=11240 RO-data=336 RW-data=68 ZI-data=11692  
+".\Objects\TuRio.axf" - 0 Error(s), 5 Warning(s).
+
+<h2>Collection of Component include folders:</h2>
+  .\RTE\_TuRio
+  D:\zhoutolls\MDK5\ARM\PACK\Keil\STM32F1xx_DFP\2.2.0\Device\Include
+
+<h2>Collection of Component Files used:</h2>
+Build Time Elapsed:  00:00:07
+</pre>
+</body>
+</html>
