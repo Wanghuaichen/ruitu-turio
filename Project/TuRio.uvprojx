@@ -186,7 +186,7 @@
             <hadIRAM2>0</hadIRAM2>
             <hadIROM2>0</hadIROM2>
             <StupSel>8</StupSel>
-            <useUlib>0</useUlib>
+            <useUlib>1</useUlib>
             <EndSel>0</EndSel>
             <uLtcg>0</uLtcg>
             <nSecure>0</nSecure>
@@ -335,7 +335,7 @@
               <MiscControls></MiscControls>
               <Define>USE_STDPERIPH_DRIVER,STM32F10X_HD</Define>
               <Undefine></Undefine>
-              <IncludePath>..\Libraries\StdPeriph_Driver\inc;..\User\Api;..\User\Main;..\User\Ocp;..\User\Bfm;..\Libraries\CMSIS;..\User\Task;..\User\App;..\ThirdLib\socket</IncludePath>
+              <IncludePath>..\Libraries\StdPeriph_Driver\inc;..\User\Api;..\User\Main;..\User\Ocp;..\User\Bfm;..\Libraries\CMSIS;..\User\Task;..\User\App;..\ThirdLib\socket;..\Interfaces</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -663,6 +663,16 @@
               <FileName>w5500_config.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\ThirdLib\socket\w5500_config.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Interfaces</GroupName>
+          <Files>
+            <File>
+              <FileName>interfaces_bottom.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Interfaces\interfaces_bottom.c</FilePath>
             </File>
           </Files>
         </Group>

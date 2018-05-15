@@ -16,5 +16,6 @@
 
 /*--------------- º¯Êý¶¨Òå --------------*/
 void do_tcp_server(void);
+void do_tcp_client(void);
 #endif
 

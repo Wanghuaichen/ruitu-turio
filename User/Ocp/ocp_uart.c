@@ -84,7 +84,7 @@ static void usart1_parameter_config(void)
   USART_InitTypeDef USART_InitStructure;  ///*  定义USART初始化结构体       */
 
   //  UART1设置始化
-  USART_InitStructure.USART_BaudRate  = 115200;              // 波特率
+  USART_InitStructure.USART_BaudRate  = 9600;              // 波特率
   USART_InitStructure.USART_WordLength= USART_WordLength_8b; // 数据位
   USART_InitStructure.USART_StopBits  = USART_StopBits_1;    // 停止位
   USART_InitStructure.USART_Parity    = USART_Parity_No;     // 校验模式
@@ -165,7 +165,7 @@ static void usart3_parameter_config(void)
   USART_InitTypeDef USART_InitStructure;  ///*  定义USART初始化结构体       */
 
   //  UART1设置始化
-  USART_InitStructure.USART_BaudRate  = 115200;              // 波特率
+  USART_InitStructure.USART_BaudRate  = 9600;              // 波特率
   USART_InitStructure.USART_WordLength= USART_WordLength_8b; // 数据位
   USART_InitStructure.USART_StopBits  = USART_StopBits_1;    // 停止位
   USART_InitStructure.USART_Parity    = USART_Parity_No;     // 校验模式
@@ -175,7 +175,7 @@ static void usart3_parameter_config(void)
   USART_Init(USART3,&USART_InitStructure);              // 初始化
 
   USART_ITConfig(USART3,USART_IT_RXNE,ENABLE);  //  使能UART1空闲中断
-  USART_ITConfig(USART3,USART_IT_IDLE,ENABLE);  //  使能UART1空闲中断
+ // USART_ITConfig(USART3,USART_IT_IDLE,ENABLE);  //  使能UART1空闲中断
 
   //启动外设运行
   USART_Cmd(USART3,ENABLE);  // 启动USART3外设

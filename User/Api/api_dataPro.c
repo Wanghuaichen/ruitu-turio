@@ -11,30 +11,13 @@
 
 void rx_data_processing(uint8_t *buf,uint16_t len,uint8_t mode)
 {
-    //TcpWriteData(buf,len);
-    uint8_t recData[30];
-    uint16_t i = 0;
-    uint16_t recLen = 0;
-    // 判断所有字节
-    while (i < len)
-    {
-      // 如果包头及ID是自己的进行数据处理
-      if ((buf[i] == 0xFD) && (buf[i + 1] == 0xF7))// && ((buf[i + 4] == GetID()) ||(buf[i + 4] == 0xF7) ))
-      {
-        recLen = ((buf[i + 2] << 8) + buf[i + 3]); // 只计算数据域的长度
-        if ((recLen < 9) || (recLen > 1032))
-        {
-//            printf("err cmd = %d",recData[0]);
-//            printf("err len = %d",recLen);
-            break;
-        }
-        else
-            recLen -= 8;
-        task_cmd(&buf[i + 5], recLen + 2, mode);                   // 执行任务处理
-        i += (recLen + 7);
-      }
-      i++;
-    }
+  if ((buf[0] == 'o')&& (buf[1] == 'k'))
+  {
+    if ((mode == COM_TYPE_RS232)
+        && ((rs232RxFlag_ & RS232_SET_MOTOR_PARAM) != RS232_SET_MOTOR_PARAM))
+      rs232RxFlag_ |= RS232_SET_MOTOR_PARAM;
+  }
+
 }
 
 /**

@@ -282,6 +282,13 @@
             GUID="{19280256-6AB1-4735-41B0-C80A71DF6CB1}"/>
     </CustomFolders>
     <Files AutoFolders="PackageView">
+        <Folder Name="../Interfaces">
+            <F N="../Interfaces/interfaces.h"/>
+            <F N="../Interfaces/interfaces_bottom.c"/>
+            <F N="../Interfaces/interfaces_bottom.h"/>
+            <F N="../Interfaces/interfaces_top.c"/>
+            <F N="../Interfaces/interfaces_top.h"/>
+        </Folder>
         <Folder Name="../Libraries/CMSIS">
             <F N="../Libraries/CMSIS/cmsis_armcc.h"/>
             <F N="../Libraries/CMSIS/cmsis_compiler.h"/>

@@ -11,7 +11,7 @@
 #define _OCP_TIMER_H_
 #include "include.h"
 /*--------------- 宏定义 --------------*/
-#define COUNTER_RESET          10000
+#define COUNTER_RESET          0
 #define ENCODER_TIM_PERIOD     (u16)(65535) 
 /*--------------- 变量定义 --------------*/
 

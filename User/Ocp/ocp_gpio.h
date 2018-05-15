@@ -45,8 +45,8 @@
 #define POWER_IMU_GPIO_Port      GPIOC
 #define MOTOR_ENABLE_Pin         GPIO_Pin_8
 #define MOTOR_ENABLE_GPIO_Port   GPIOC
-#define LED_OAS_RIGNT_Pin        GPIO_Pin_9
-#define LED_OAS_RIGNT_GPIO_Port  GPIOC
+#define LED_OAS_RIGHT_Pin        GPIO_Pin_9
+#define LED_OAS_RIGHT_GPIO_Port  GPIOC
 #define RS485_CON_Pin            GPIO_Pin_8
 #define RS485_CON_GPIO_Port      GPIOA
 #define POWER_LIDAR_Pin          GPIO_Pin_15

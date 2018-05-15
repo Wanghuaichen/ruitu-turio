@@ -13,6 +13,25 @@ static void system_setup(void);
 uint8_t motorTest[8];
 uint32_t canID = 0x701;
 uint16_t adcValue[100][2];
+MotorPosVel motorP;
+extern double_t encoderPosition_ = 0;
+extern int64_t encoderPlusNum_ = 0;
+extern int32_t encoderUpdata = 0;
+#define PUTCHAR_PROTOTYPE int fputc(int ch, FILE *f)
+//#endif
+PUTCHAR_PROTOTYPE
+{
+//    HAL_UART_Transmit(&huart5 ,(uint8_t *)&ch, 1, 0xFFFF);
+    //HAL_UART_Transmit_IT(&huart1,(uint8_t *)&ch, 1); // 长度无法变化
+  USART_SendData(USART3, (uint16_t)ch);
+//  while( USART_GetFlagStatus(USART3, USART_FLAG_TC)==RESET);
+  while(USART_GetFlagStatus(USART3, USART_FLAG_TXE) == RESET)
+  {
+  } //等待字符发送完毕
+  return ch;
+}
+
+
 int main (void)
 {
 
@@ -50,50 +69,36 @@ int main (void)
  // w5500_config_subnetMask(&sDefaultNetConfig_, W5500_WRITE_PARAMETER);
 ////  /* Initilaize the LwIP satck */
   socket_buf_init(txsize, rxsize);    /*初始化8个Socket的发送接收缓存大小*/
- // printf("good job!");
+  printf("good job!");
+ motorP.position = 90000;
+ motorP.velocity = 300;
+
+ SetMotor(ENABLE);
+ task_init();
   while(1)
   {
-    ti++;
-    if (ti > 5000)
-    {
-      switch(step++)
-      {
-        case 1:
-          canID = 0x701;
-          can_tx_data_package(CAN1,motorTest,8,canID,CAN_RTR_REMOTE);break;
-        case 2:
-          canID = 0x00;
-          motorTest[0] = START_REMOTE_NODE;
-          can_tx_data_package(CAN1,motorTest,8,canID,CAN_RTR_DATA);break;
-        case 3:
-          canID = 0x701;
-          can_tx_data_package(CAN1,motorTest,8,canID,CAN_RTR_REMOTE);break;
-        case 4:
-          canID = 0x00;
-          motorTest[0] = STOP_REMOTE_NODE;
-          can_tx_data_package(CAN1,motorTest,8,canID,CAN_RTR_DATA);break;
-        case 5:
-          canID = 0x701;
-          can_tx_data_package(CAN1,motorTest,8,canID,CAN_RTR_REMOTE);break;
-        default: break;
-      }
-      if (step % 2)
-       ;// control_all_off();
-      else
-        control_all_on();
-      ti = 0;
-      gpio_toggle_pin(LED_SYS_GPIO_Port,LED_SYS_Pin);
-      get_adc_value(adcValue[step]);
-      adcValue[step][1] = computer_tempature(adcValue[step][0]);
-      if (step >= 100)
-        step = 0;
-    }
-    do_tcp_server();
-//    USART_SendData(USART3,0x036);
-//    while(USART_GetFlagStatus(USART3, USART_FLAG_TXE) == RESET)
+//    ti++;
+//    if (ti > 50000)
+//    {
+//      switch(step++)
 //      {
-//      } //等待字符发送完毕
-//      delay_us(100000);
+//        case 4:SetMotorTargetPosVel(&motorP);break;
+//        case 2: SetCAN(ENABLE);break;
+//        case 3: GetMotorState(motorTest,8);break;
+//        case 5: motor_start_position_mode();break;
+//        default: break;
+//      }
+
+//      ti = 0;
+//      get_adc_value(adcValue[step]);
+//      adcValue[step][1] = computer_tempature(adcValue[step][0]);
+//      if (step >= 100)
+//        step = 0;
+//    }
+//
+      do_tcp_client();
+     task_run();
+//      printf ("%s %s %s%d\n","i","r0","0x",8000);
   }
 }
 

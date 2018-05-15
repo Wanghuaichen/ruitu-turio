@@ -87,6 +87,11 @@ uint8_t get_average_value_uint8(uint8_t *buf, uint16_t length);
 uint16_t CRC16(uint8_t* puchMsg, uint16_t usDataLen);
 __asm void SystemReset(void);
 void delay_us(u32 usTime);
+
+
+void i32toa(uint32_t n,char *str, uint8_t* len);
+uint32_t atoin32(char* str);
+uint8_t ctod(char c );
 #endif
 
 

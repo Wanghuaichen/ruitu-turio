@@ -66,32 +66,6 @@ void Encoder_Init_TIM5(void)
 	TIM2->SMCR |= 3<<0;	          //SMS='011' 所有的输入均在上升沿和下降沿有效
 	TIM2->CNT = COUNTER_RESET;
 	TIM2->CR1 |= 0x01;    //CEN=1，使能定时器
-//  RCC->APB1ENR|=1<<3;     //TIM5时钟使能
-//  RCC->APB2ENR|=1<<2;    //使能PORTA时钟
-//  GPIOA->CRL&=0XFFFFFF00;//PA0 PA1
-//	GPIOA->CRL|=0X00000044;//浮空输入
-//	/* 把定时器初始化为编码器模式 */ 
-//	TIM5->PSC = 0x0;//预分频器
-//	TIM5->ARR = ENCODER_TIM_PERIOD-1;//设定计数器自动重装值 
-//  TIM5->CCMR1 |= 1<<0;          //输入模式，IC1FP1映射到TI1上
-//  TIM5->CCMR1 |= 1<<8;          //输入模式，IC2FP2映射到TI2上
-//  TIM5->CCER |= 0<<1;           //IC1不反向
-//  TIM5->CCER |= 0<<5;           //IC2不反向
-//	TIM5->SMCR |= 3<<0;	          //SMS='011' 所有的输入均在上升沿和下降沿有效
-//	TIM5->CNT = COUNTER_RESET;
-//	TIM5->CR1 |= 0x01;    //CEN=1，使能定时器
-////  GPIOA->CRL&=0XFFFFF00F;//PA0 PA1
-////  GPIOA->CRL|=0X00000440;//浮空输入
-////  /* 把定时器初始化为编码器模式 */
-////  TIM5->PSC = 0x0;//预分频器
-////  TIM5->ARR = ENCODER_TIM_PERIOD-1;//设定计数器自动重装值
-////  TIM5->CCMR1 |= 1<<8;          //输入模式，IC2FP2映射到TI2上
-////  TIM5->CCMR2 |= 1<<0;          //输入模式，IC1FP1映射到TI1上
-////  TIM5->CCER |= 0<<5;           //IC2不反向
-////  TIM5->CCER |= 0<<9;           //IC2不反向
-////  TIM5->SMCR |= 3<<0;           //SMS='011' 所有的输入均在上升沿和下降沿有效
-////  TIM5->CNT = COUNTER_RESET;
-////  TIM5->CR1 |= 0x01;    //CEN=1，使能定时器
 }
 
 uint16_t Read_Encoder(void)

@@ -38,7 +38,7 @@ void can1_gpio_config(void)
   GPIO_InitTypeDef GPIO_InitStructure;
   RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA|RCC_APB2Periph_AFIO, ENABLE);//使能PORTA时钟
   GPIO_PinRemapConfig(GPIO_Remap1_CAN1,DISABLE);
-  
+
   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_12;
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP; //复用推挽
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
@@ -76,7 +76,7 @@ void can1_parameter_config(void)
   CAN_InitStructure.CAN_SJW = CAN_SJW_1tq;      //重新同步跳跃宽度1个时间单位
   CAN_InitStructure.CAN_BS1 = CAN_BS1_3tq;      //时间段1为3个时间单位
   CAN_InitStructure.CAN_BS2 = CAN_BS2_2tq;      //时间段2为2个时间单位
-  CAN_InitStructure.CAN_Prescaler = 24;         //时间单位长度为24
+  CAN_InitStructure.CAN_Prescaler = 6;         //时间单位长度为24
   CAN_Init(CAN1,&CAN_InitStructure);          //波特率为：72M/2/24(1+3+2)=0.1 即250K
 
   //* CAN filter init */
@@ -223,10 +223,15 @@ void can2_init(void)
 #endif
 
 /**
-*@brief   can口发送函数
-*@param     hcan：要发送的口 buf：要发送的数据 len：数据长度
-*@param   addr：DCU地址 instr：发送指令
-*@return    1：成功 0：失败
+*@function uint8_t can_tx_data_package(CAN_TypeDef *hcan, uint8_t *buf, uint8_t len, uint32_t identifier, uint8_t frameMode)
+*@brief    can发送指令
+*@param    hcan：用的can口
+*@param    buf：发送的数据
+*@param    len：发送数据长度
+*@param    identifier：标识符
+*@param    frameMode：指令格式数据帧：CAN_RTR_Data 远程帧：CAN_RTR_Remote
+*@return   1：成功 2：失败
+*@date     2018/5/14
 */
 uint8_t can_tx_data_package(CAN_TypeDef *hcan, uint8_t *buf, uint8_t len, uint32_t identifier,uint8_t frameMode)
 {

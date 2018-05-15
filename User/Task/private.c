@@ -326,17 +326,18 @@ uint16_t get_average_value_uint16(uint16_t *buf, uint16_t length)
 //#ifdef __GNUC__
 //#define PUTCHAR_PROTOTYPE int __io_putchar(int ch)
 //#else
-#define PUTCHAR_PROTOTYPE int fputc(int ch, FILE *f)
-//#endif
-PUTCHAR_PROTOTYPE
-{
-//    HAL_UART_Transmit(&huart5 ,(uint8_t *)&ch, 1, 0xFFFF);
-    //HAL_UART_Transmit_IT(&huart1,(uint8_t *)&ch, 1); // 长度无法变化
-  while(USART_GetFlagStatus(USART1,USART_FLAG_TC) == RESET);
-  USART_SendData(USART1, (uint16_t)ch);
-
-  return ch;
-}
+//#define PUTCHAR_PROTOTYPE int fputc(int ch, FILE *f)
+////#endif
+//PUTCHAR_PROTOTYPE
+//{
+////    HAL_UART_Transmit(&huart5 ,(uint8_t *)&ch, 1, 0xFFFF);
+//    //HAL_UART_Transmit_IT(&huart1,(uint8_t *)&ch, 1); // 长度无法变化
+//  USART_SendData(USART3, (uint16_t)ch);
+//  while(USART_GetFlagStatus(USART3, USART_FLAG_TXE) == RESET)
+//  {
+//  } //等待字符发送完毕
+//  return ch;
+//}
 
 __asm void SystemReset(void)
 {
@@ -392,7 +393,70 @@ void delay_us(u32 usTime)
         }
     }
 }
+/**
+*@function void itoa(uint32_t n, uint8_t *str, uint8_t *len)
+*@brief    将10进制数据转换成ascii码
+*@param    n：数据
+*@param    str：转换的结果
+*@param    len:转换的数据长度
+*@return   无
+*/
+void i32toa(uint32_t n,char *str, uint8_t* len)
+{
+  uint8_t i = 0;
+  char tempr[10];
+  do
+  {
+    tempr[i++]=n%10+'0';
+  }while((n/=10)>0);
+  *len = i;
+  for (i = 0; i < *len; i++)
+  {
+    str[i] = tempr[*len - 1 - i];
+  }
+}
+/**
+*@function uint32_t atoi32(char *str)
+*@brief    将ascii数据转换成32位数
+*@param    str:需要转换的asc数据
+*@return   转换完成的数据
+*/
+uint32_t atoin32(char* str)
+{
+  uint32_t num = 0;
+  while (*str !=0)
+          num = num * 10 + ctod(*str++);
+  return num;
+}
+/**
+*@function uint8_t ctod(char c)
+*@brief    将一个数字字符(0-F)转换成数字(0-15)
+*@param    c:需要转换的字符
+*@return   返回转换的结果
+*/
+uint8_t ctod(char c )
+{
+  if ((c >= '0') && (c <= '9'))
+    return c - '0';
+  if ((c >= 'a') && (c <= 'f'))
+    return 10 + c -'a';
+  if ((c >= 'A') && (c <= 'F'))
+    return 10 + c -'A';
 
+  return (uint8_t)c;
+}
+
+//  uint32_t atoi (char *str)
+//  {
+//    uint32_t i,n,sign;
+//    for(i=0;isspace(s[i]);i++)//跳过空白符;
+//      sign=(s[i]=='-')?-1:1;
+//    if(s[i]=='+'||s[i]==' -')//跳过符号
+//      i++;
+//    for(n=0;isdigit(s[i]);i++)
+//         n=10*n+(s[i]-'0');//将数字字符转换成整形数字
+//    return sign *n;
+//  }
 /*********************************************************************************************************
 **                                        End Of File
 *********************************************************************************************************/

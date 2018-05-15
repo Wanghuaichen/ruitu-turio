@@ -49,6 +49,7 @@
 //--------恢复出厂设置-------------------
 #define CMD_CONFIG_FACTORY_SET            0xA9
 
+// 中值定义
 
 #endif
 
@@ -68,13 +69,14 @@ EXT_GLOBAL  uint8_t               cmdTick_;    // 指令计数
 
 
 /*-*********任务定义***********************************/
-#define TASK_MAX        28  // 可运行任务个数定义
-EXT_GLOBAL sTASK*       _TaskFlow[TASK_MAX + 1]; // 定义任务数
-EXT_GLOBAL TASK         taskID_;                 // 定义任务编号，暂时无用
+#define TASK_MAX             28  // 可运行任务个数定义
+EXT_GLOBAL sTASK*            _TaskFlow[TASK_MAX + 1]; // 定义任务数
+EXT_GLOBAL TASK              taskID_;                 // 定义任务编号，暂时无用
 
 /*-*********空闲任务定义*******************************/
-EXT_GLOBAL sTASK        _TaskIdle;   // 定义空闲任务
-
+EXT_GLOBAL sTASK              _TaskIdle;   // 定义空闲任务
+/*------------------- GPIO控制相关定义 -------------------------------*/
+EXT_GLOBAL uint8_t            ledBlinkingFlag_;
 /*-****************************串口任务定义*******************************/
 EXT_GLOBAL sTASK              _TaskUartRx;
 EXT_GLOBAL sTASK              _TaskUartTx;
@@ -120,6 +122,14 @@ EXT_GLOBAL S_W5500_CONFIG   sDefaultNetConfig_;
 /*---------------------------------编码器任务--------------------------------*/
 EXT_GLOBAL uint16_t        encoderValue_[100];
 EXT_GLOBAL uint8_t         encoderNum_;
+
+/*------------------- 接口函数相关定义 -------------------------------*/
+#define   CANOPNE_GET_NODE_STATE        0x01  // 读取节点标志
+
+EXT_GLOBAL uint8_t         canRxData_[8];
+EXT_GLOBAL uint8_t         canRxFlag_;    // can 接收数据定义
+#define RS232_SET_MOTOR_PARAM           0x01  // 设置电机参数标志
+EXT_GLOBAL uint8_t         rs232RxFlag_;  // 232 接收数据定义
 /*********************************************************************************************************
 **                                        End Of File
 *********************************************************************************************************/

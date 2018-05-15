@@ -111,8 +111,9 @@ void task_idle(void)
   if ((runTick_ % 5) == 0)
   {
     gpio_toggle_pin(LED_SYS_GPIO_Port, LED_SYS_Pin);
+    control_blinking();
   }
-
+  test_hardware();
   // HAL_IWDG_Refresh(&hiwdg);           // 喂狗
   _TaskIdle.interval = 100;              // 延时也可用于控制喂狗间隔
   _TaskIdle.state    = TASK_STATE_DELAY; // 任务状态设置
