@@ -51,6 +51,7 @@ void task_uart_rx(void)
   {
     _TaskUartRx.info &= ~(UART1_RX_DATA);
     Circle_Read_Data(&sUart1RxCircleBuf_, rxData, &len);
+    battery_rx_processing(rxData, len);
 //    Circle_Read_Data(&sUart1RxCircleBuf_, cteRxData_, &cteRxLen);
 //    CTE_RX_Data_Pro(cteRxData_, cteRxLen, COM_TYPE_AORB);
   }
@@ -69,6 +70,8 @@ void task_uart_tx_init(void)
   _TaskUartTx.command = CMD_TASK_UART_TX;
   memset(&uart3TxBuf_, 0, sizeof(uart3TxBuf_));
   Circle_Creat_Buffer(&sUart3TxCircleBuf_, uart3TxBuf_, UART3_BUF_LEN); // 创建缓冲区格式
+    memset(&uart1TxBuf_, 0, sizeof(uart1TxBuf_));
+  Circle_Creat_Buffer(&sUart1TxCircleBuf_, uart1TxBuf_, UART1_BUF_LEN); // 创建缓冲区格式
   _TaskUartTx.state = TASK_STATE_RUN;
 }
 /**
@@ -86,6 +89,22 @@ void task_uart_tx(void)
     {
       Circle_Read_Byte(&sUart3TxCircleBuf_, &sendData);
       USART3->DR = (uint16_t)sendData;
+    }
+  }
+  if (sUart1TxCircleBuf_.unreadLen > 0)
+  {
+    if (USART_GetFlagStatus(USART1,USART_FLAG_TC) != RESET)
+    {
+      rs485_select_tx_rx(RS485_TX);
+      while (sUart1TxCircleBuf_.unreadLen > 0)
+      {
+        Circle_Read_Byte(&sUart1TxCircleBuf_, &sendData);
+        USART1->DR = (uint16_t)sendData;
+        while(USART_GetFlagStatus(USART1, USART_FLAG_TXE) == RESET)
+        {
+        } //等待字符发送完毕
+      }
+      rs485_select_tx_rx(RS485_RX);
     }
   }
 }

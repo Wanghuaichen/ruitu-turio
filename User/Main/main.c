@@ -10,6 +10,7 @@
 #include "include.h"
 
 static void system_setup(void);
+uint8_t battary[8] = {0x01,0x03,0x00,0x12,0x00,0x01,0x24,0x0F};
 uint8_t motorTest[8];
 uint32_t canID = 0x701;
 uint16_t adcValue[100][2];
@@ -72,35 +73,48 @@ int main (void)
   printf("good job!");
  motorP.position = 90000;
  motorP.velocity = 300;
-
+queryRegAddr_ = BATTERY_REG_VOTAGE;
  SetMotor(ENABLE);
  task_init();
   while(1)
   {
-//    ti++;
-//    if (ti > 50000)
-//    {
-//      switch(step++)
-//      {
+    ti++;
+    if (ti > 1000000)
+    {
+      switch(step++)
+      {
+
 //        case 4:SetMotorTargetPosVel(&motorP);break;
 //        case 2: SetCAN(ENABLE);break;
 //        case 3: GetMotorState(motorTest,8);break;
 //        case 5: motor_start_position_mode();break;
-//        default: break;
-//      }
+        case 1:queryRegAddr_ = BATTERY_REG_VOTAGE;break;
+        case 2:queryRegAddr_ = BATTERY_REG_VOTAGE_PERCENT;break;
+        case 3:queryRegAddr_ = BATTERY_REG_CURRENT;break;
+        default: break;
+      }
 
-//      ti = 0;
+
 //      get_adc_value(adcValue[step]);
 //      adcValue[step][1] = computer_tempature(adcValue[step][0]);
-//      if (step >= 100)
-//        step = 0;
-//    }
-//
-      do_tcp_client();
-     task_run();
+      if (step >= 10)
+        step = 0;
+      battery_control(queryRegAddr_);
+         ti = 0;
+      }
+    //
+  //  do_tcp_server();
+    //  do_tcp_client();
+     
+
+
 //      printf ("%s %s %s%d\n","i","r0","0x",8000);
-  }
+
+task_run();
+    }
+
 }
+
 
 /**
   * @brief  Setup STM32 system (clocks, Ethernet, GPIO, NVIC) and STM3210C-EVAL resources.

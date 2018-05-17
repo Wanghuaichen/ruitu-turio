@@ -356,6 +356,8 @@
             <F N="../ThirdLib/socket/w5500_config.h"/>
         </Folder>
         <Folder Name="../User/Api">
+            <F N="../User/Api/api_battery.c"/>
+            <F N="../User/Api/api_battery.h"/>
             <F N="../User/Api/api_dataPro.c"/>
             <F N="../User/Api/api_dataPro.h"/>
             <F N="../User/Api/api_motor.c"/>

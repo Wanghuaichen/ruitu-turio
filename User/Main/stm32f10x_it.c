@@ -196,6 +196,8 @@ void USART1_IRQHandler(void)
   if(USART_GetITStatus(USART1, USART_IT_IDLE) != RESET)
   {
     USART_ClearITPendingBit(USART1,USART_IT_IDLE);            /* 清除接收中断标志   */
+    rxData = (uint16_t)(USART1->DR & (uint16_t)0x01FF);
+    _TaskUartRx.info |= UART1_RX_DATA;
     _TaskUartRx.state = TASK_STATE_RUN;
   }
 
@@ -224,6 +226,7 @@ void USART3_IRQHandler(void)
   if(USART_GetITStatus(USART3, USART_IT_IDLE) != RESET)
   {
     USART_ClearITPendingBit(USART3,USART_IT_IDLE);                  /* 清除接收中断标志             */
+    rxData = (uint16_t)(USART3->DR & (uint16_t)0x01FF);
     _TaskUartRx.info |= UART3_RX_DATA;
     _TaskUartRx.state = TASK_STATE_RUN;
   }
