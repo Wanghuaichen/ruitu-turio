@@ -100,7 +100,7 @@ uint8_t motor_set_velocity(uint32_t velocity);
 void motor_start_position_mode(void);
 void task_motor_control_init(void);
 void task_motor_control(void);
-uint8_t motor_tx_data_processing(char ins,char *reg,uint32_t sendData,uint16_t len);
+uint8_t motor_tx_data_processing(char ins,char *reg,char* sendData,uint16_t len);
 uint8_t motor_rx_data_processing(char *buf,uint16_t len);
 uint8_t motor_mode_home_control(void);
 uint8_t motor_mode_position_control(void);

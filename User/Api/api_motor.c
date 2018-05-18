@@ -238,25 +238,25 @@ void task_motor_control(void)
 *@param    len :数据长度
 *@return   1:成功 0:失败
 */
-uint8_t motor_tx_data_processing(char ins,char *reg,uint32_t sendData,uint16_t len)
+uint8_t motor_tx_data_processing(char ins,char *reg,char* sendData,uint16_t len)
 {
   uint8_t length = 0;
 
-  char trans[10] = "\0",sendAsc[20] = "\0";
+  char sendAsc[20] = "\0";
   rs232RxFlag_ &= ~RS232_SET_MOTOR_PARAM;
   sendAsc[0] = ins;
   sendAsc[1] = ' ';
   strcat(sendAsc, reg);
   if (len > 0)
   {
-    i32toa(sendData,trans,&length);
-    strcat(sendAsc, trans);
-//    length += sizeof(sendData);
+//    i32toa(sendData,trans,&length);
+    strcat(sendAsc, sendData);
+    length += strlen(sendData);
   }
 
   strcat(sendAsc, sendReturn);
-  length += sizeof(reg) + sizeof(sendReturn) + 2;
-  Circle_Write_Data(&sUart3TxCircleBuf_,(uint8_t*)sendAsc,length + 2);
+  length += strlen(reg) + strlen(sendReturn) + 2;
+  Circle_Write_Data(&sUart3TxCircleBuf_,(uint8_t*)sendAsc,length + 1);
   return 1;
 }
 uint8_t motor_rx_data_processing(char *buf,uint16_t len)
@@ -280,10 +280,10 @@ uint8_t motor_mode_home_control(void)
   {
     switch (step++)
     {
-        case 0: motor_tx_data_processing( 's', MOTOR_REG_SET_HOME_HOMING_METHOD,513,1);break;
-        case 1: motor_tx_data_processing( 's', MOTOR_REG_SET_HOME_SLOW_VELOCITY,40000,2);break;
-        case 2: motor_tx_data_processing( 's', MOTOR_REG_SET_HOME_OFFSET,0,1);break;
-        case 3: motor_tx_data_processing( 's', MOTOR_REG_SET_DESIRED_STATE,21,1);break;
+        case 0: motor_tx_data_processing( 's', MOTOR_REG_SET_HOME_HOMING_METHOD,"513",1);break;
+        case 1: motor_tx_data_processing( 's', MOTOR_REG_SET_HOME_SLOW_VELOCITY,"40000",2);break;
+        case 2: motor_tx_data_processing( 's', MOTOR_REG_SET_HOME_OFFSET,"-26000",1);break;
+        case 3: motor_tx_data_processing( 's', MOTOR_REG_SET_DESIRED_STATE,"21",1);break;
         case 4:
         {
           rs232RxFlag_ &= ~RS232_SET_MOTOR_PARAM;
