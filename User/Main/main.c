@@ -16,7 +16,6 @@ uint32_t canID = 0x701;
 uint16_t adcValue[100][2];
 MotorPosVel motorP;
 extern double_t encoderPosition_ = 0;
-extern int64_t encoderPlusNum_ = 0;
 extern int32_t encoderUpdata = 0;
 #define PUTCHAR_PROTOTYPE int fputc(int ch, FILE *f)
 //#endif
@@ -35,7 +34,6 @@ PUTCHAR_PROTOTYPE
 
 int main (void)
 {
-
   uint32_t ti = 0;
   uint8_t step = 0;
   system_setup();
@@ -64,22 +62,25 @@ int main (void)
 
   sDefaultNetConfig_.localPort = 502;
   w5500_restart();
- // w5500_config_gateway(&sDefaultNetConfig_, W5500_WRITE_PARAMETER);
+  w5500_config_gateway(&sDefaultNetConfig_, W5500_WRITE_PARAMETER);
   w5500_config_ip(&sDefaultNetConfig_, W5500_WRITE_PARAMETER);
   w5500_config_macAddress(&sDefaultNetConfig_, W5500_WRITE_PARAMETER);
  // w5500_config_subnetMask(&sDefaultNetConfig_, W5500_WRITE_PARAMETER);
 ////  /* Initilaize the LwIP satck */
   socket_buf_init(txsize, rxsize);    /*初始化8个Socket的发送接收缓存大小*/
-  printf("good job!");
+ // printf("good job!");
  motorP.position = 90000;
  motorP.velocity = 300;
 queryRegAddr_ = BATTERY_REG_VOTAGE;
  SetMotor(ENABLE);
  task_init();
+// motor_start_position_mode();
+// printf ("%s %s %s%d\n","i","r0","0x",8000);
+//control_reserved_out1(OUT_CONTROL_ON);
   while(1)
   {
     ti++;
-    if (ti > 1000000)
+    if (ti > 200000)
     {
       switch(step++)
       {
@@ -88,29 +89,37 @@ queryRegAddr_ = BATTERY_REG_VOTAGE;
 //        case 2: SetCAN(ENABLE);break;
 //        case 3: GetMotorState(motorTest,8);break;
 //        case 5: motor_start_position_mode();break;
-        case 1:queryRegAddr_ = BATTERY_REG_VOTAGE;break;
-        case 2:queryRegAddr_ = BATTERY_REG_VOTAGE_PERCENT;break;
-        case 3:queryRegAddr_ = BATTERY_REG_CURRENT;break;
+//      case 1:queryRegAddr_ = BATTERY_REG_VOTAGE;break;
+//      case 2:queryRegAddr_ = BATTERY_REG_VOTAGE_PERCENT;break;
+//      case 3:queryRegAddr_ = BATTERY_REG_CURRENT;break;
+//      case 1:printf ("%s\n","r");break;
+//      case 5:printf ("%s %s %s%d\n","i","r0","0x",8000);break;
+//       case 3:printf ("%s %s %d\n","i","r3",1000);break;
+//        case 5:printf ("%s %s %d\n","i","r4",300);break;
+//        case 7:printf ("%s %s %s%d\n","i","r0","0x",8001);break;
+       case 3:  _TaskMotorControl.state = TASK_STATE_RUN;
+        _TaskMotorControl.progressBar = 0;
+        break;
         default: break;
       }
 
 
 //      get_adc_value(adcValue[step]);
 //      adcValue[step][1] = computer_tempature(adcValue[step][0]);
-      if (step >= 10)
-        step = 0;
+      if (step >= 20)
+        step = 10;
       battery_control(queryRegAddr_);
          ti = 0;
       }
     //
   //  do_tcp_server();
-    //  do_tcp_client();
-     
+   //   do_tcp_client();
 
 
-//      printf ("%s %s %s%d\n","i","r0","0x",8000);
 
-task_run();
+    //  printf ("%s %s %s%d\n","i","r0","0x",8000);
+
+  task_run();
     }
 
 }
@@ -145,12 +154,13 @@ void system_setup(void)
   can1_init();
  /// configure the spi
   spi1_init();
-adc_config_init();
+  adc_config_init();
   //* SystTick configuration: an interrupt every 1ms */
   RCC_GetClocksFreq(&RCC_Clocks);
   SysTick_Config(RCC_Clocks.SYSCLK_Frequency / 1000);
-Timer3_Init();
-Encoder_Init_TIM5();
+  Timer3_Init();
+ // Encoder_Init_TIM5();
+ tim2_encoder_init();
   //* Update the SysTick IRQ priority should be higher than the Ethernet IRQ */
   //* The Localtime should be updated during the Ethernet packets processing */
   NVIC_SetPriority (SysTick_IRQn, 1);
@@ -177,7 +187,8 @@ void assert_failed(uint8_t* file, uint32_t line)
   /**
      Infinite loop */
   while (1)
-  {}
+  {
+  }
 }
 #endif
 

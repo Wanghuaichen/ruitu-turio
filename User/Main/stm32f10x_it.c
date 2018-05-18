@@ -209,27 +209,21 @@ void USART1_IRQHandler(void)
   */
 void USART3_IRQHandler(void)
 {
-  static int i = 0;
   uint16_t rxData;
-  if(USART_GetITStatus(USART3, USART_IT_RXNE) != RESET)
-  {
-    USART_ClearITPendingBit(USART3,USART_IT_RXNE);                  /* 清除接收中断标志             */
-    rxData = (uint16_t)(USART3->DR & (uint16_t)0x01FF);             /* 读取数据 */
-    Circle_Write_Byte(&sUart3RxCircleBuf_,rxData);
-    if (i++ >= 1)
-    {
-    _TaskUartRx.info |= UART3_RX_DATA;
-    _TaskUartRx.state = TASK_STATE_RUN;
-      i = 0;
-    }
-  }
-  if(USART_GetITStatus(USART3, USART_IT_IDLE) != RESET)
+    if(USART_GetITStatus(USART3, USART_IT_IDLE) != RESET)
   {
     USART_ClearITPendingBit(USART3,USART_IT_IDLE);                  /* 清除接收中断标志             */
     rxData = (uint16_t)(USART3->DR & (uint16_t)0x01FF);
     _TaskUartRx.info |= UART3_RX_DATA;
     _TaskUartRx.state = TASK_STATE_RUN;
   }
+  if(USART_GetITStatus(USART3, USART_IT_RXNE) != RESET)
+  {
+    USART_ClearITPendingBit(USART3,USART_IT_RXNE);                  /* 清除接收中断标志             */
+    rxData = (uint16_t)(USART3->DR & (uint16_t)0x01FF);             /* 读取数据 */
+    Circle_Write_Byte(&sUart3RxCircleBuf_,rxData);
+  }
+
 
 }
 /**
@@ -305,24 +299,50 @@ void EXTI9_5_IRQHandler(void)
 void TIM3_IRQHandler(void)
 {
 
-  uint16_t encoderNew = 0;
+//  uint16_t encoderNew = 0;
   if(TIM3->SR&0X0001)//10ms定时中断
   {
       TIM3->SR&=~(1<<0);           //===清除定时器1中断标志位
-      encoderNew = Read_Encoder();     //===读取编码器的位置数据 初始值是10000，详见encoder.c 和encoder.h
-      if ((TIM2->SR & TIM_SR_UIF) == TIM_SR_UIF)
-      {
-        TIM2->SR &= ~TIM_SR_UIF;
-        if (encoderNew > 32786)
-          encoderUpdata--;
-        else 
-          encoderUpdata++;
-      }
-      encoderPlusNum_ = (int64_t)(encoderUpdata*65535) + (int64_t)encoderNew;
-      encoderPosition_ =(double_t)(encoderPlusNum_/ 39.37); 
-      //encoderPosition_ *= DIV_FREQ;
+ //     encoderNew = Read_Encoder();     //===读取编码器的位置数据 初始值是10000，详见encoder.c 和encoder.h
+//      if ((TIM2->SR & TIM_SR_UIF) == TIM_SR_UIF)
+//      {
+//        TIM2->SR &= ~TIM_SR_UIF;
+//        if (encoderNew > 32786)
+//          encoderUpdata--;
+//        else
+//          encoderUpdata++;
+//      }
+//      encoderPlusNum_ = (int64_t)(encoderUpdata*65535) + (int64_t)encoderNew;
+//      encoderPosition_ =(double_t)(encoderPlusNum_/ 39.37);
+//      //encoderPosition_ *= DIV_FREQ;
   }
 
+}
+void TIM2_IRQHandler(void)
+{
+  uint16_t encoderNew = 0;
+  if ((TIM2->SR & TIM_SR_UIF) == TIM_SR_UIF)
+  {
+    TIM2->SR &= ~TIM_SR_UIF;
+    encoderNew = (uint16_t)(TIM2->CNT);
+    if (encoderNew > 20)
+    {
+      encoderPlusNum_--;
+      if ((IR_LOCATION_GPIO_Port->IDR & IR_LOCATION_Pin) == (uint32_t)Bit_RESET)
+        irLocationNum_++;
+    }    
+    else
+    {
+      encoderPlusNum_++;
+      if ((IR_LOCATION_GPIO_Port->IDR & IR_LOCATION_Pin) == (uint32_t)Bit_RESET)
+        irLocationNum_--;
+      if ((0 - irLocationNum_) > 28)
+      {
+        //MOTOR_ENABLE_GPIO_Port->BRR = MOTOR_ENABLE_Pin;
+        RSV_OUT1_GPIO_Port->BSRR = RSV_OUT1_Pin;
+      }
+    }
+  }
 }
 /**
   * @}

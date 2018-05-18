@@ -64,8 +64,8 @@ uint8_t GetMotorState(uint8_t *buf,uint8_t len)
 uint8_t SetMotorTargetPosVel(MotorPosVel *motorParam)
 {
   if (motor_set_position(motorParam->position) != 1)
-    //return 0;
-   delay_us(10000);
+    return 0;
+   //delay_us(10000);
   if (motor_set_velocity(motorParam->velocity) != 1)
     return 1;
   return 2;

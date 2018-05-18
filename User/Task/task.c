@@ -18,6 +18,7 @@ void task_init(void)
   task_add(taskID_++, &_TaskUartRx, task_uart_rx_init);
   task_add(taskID_++, &_TaskUartTx, task_uart_tx_init);
   task_add(taskID_++, &_TaskConfig, task_config_init);
+  task_add(taskID_++, &_TaskMotorControl, task_motor_control_init);
   task_add(taskID_++, &_TaskIdle, task_idle_init);
 }
 
@@ -75,15 +76,15 @@ void task_cmd(uint8_t *buf, uint8_t len, uint8_t port)
 void task_run(void)
 {
   uint8_t i;
-  uint32_t oldtick;
+//  uint32_t oldtick;
   for (i = 0; i < taskID_; i++)                    // 轮询任务数组内每一个任务
   {
     if (TASK_STATE_RUN == _TaskFlow[i]->state)    // 若任务状态为运行状态，运行任务函数
     {
-      oldtick = sysTick_;
+ //     oldtick = sysTick_;
       _TaskFlow[i]->fun();                       // 运行任务函数
-      if (((sysTick_ - oldtick) > 1) && (sysTick_ > oldtick))
-        printf("运行超时！任务号;%d 超时时间:%d", i, sysTick_ - oldtick);
+//      if (((sysTick_ - oldtick) > 1) && (sysTick_ > oldtick))
+//        printf("运行超时！任务号;%d 超时时间:%d", i, sysTick_ - oldtick);
     }
   }
 
@@ -114,6 +115,26 @@ void task_idle(void)
     control_blinking();
   }
   test_hardware();
+  if ((IR_LOCATION_GPIO_Port->IDR & IR_LOCATION_Pin) != (uint32_t)Bit_RESET)
+  {
+//    if (((irLocationNum_ - 0) > 2) && ((irLocationNum_ - 0) < 15))
+//    {      
+//      encoderNum_++;
+//    }
+//    else if (((0 - irLocationNum_) > 2) && (( 0 - irLocationNum_) < 10))
+//    {
+//      encoderNum_--;
+//    }
+//    else if (( 0 - irLocationNum_) > 15)
+//    {
+//      encoderNum_ = 0;
+//      printf( "%s %d\n","t",0);
+//    }
+
+    RSV_OUT1_GPIO_Port->BRR = RSV_OUT1_Pin;
+    irLocationNum_ =  0;
+  }
+    
   // HAL_IWDG_Refresh(&hiwdg);           // 喂狗
   _TaskIdle.interval = 100;              // 延时也可用于控制喂狗间隔
   _TaskIdle.state    = TASK_STATE_DELAY; // 任务状态设置

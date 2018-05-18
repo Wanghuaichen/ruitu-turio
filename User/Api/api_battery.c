@@ -119,7 +119,6 @@ void battery_tx_processing(uint8_t addr,uint8_t funCode, uint8_t regAddr)
 }
 void battery_rx_processing(uint8_t *buf, uint16_t len)
 {
-  uint16_t i;
   if ((buf[0] == 0x01) && (buf[1] == 0x03))
   {
     if (queryRegAddr_ == BATTERY_REG_VOTAGE)

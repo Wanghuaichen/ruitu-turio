@@ -44,7 +44,7 @@ void task_uart_rx(void)
   {
     _TaskUartRx.info &= ~(UART3_RX_DATA);
     Circle_Read_Data(&sUart3RxCircleBuf_, rxData, &len);
-    rx_data_processing(rxData, len, COM_TYPE_RS232);
+    motor_rx_data_processing((char*)rxData, len);
   }
   // 串口3是否接收到数据
   if (_TaskUartRx.info & UART1_RX_DATA)
@@ -88,7 +88,14 @@ void task_uart_tx(void)
     if (USART_GetFlagStatus(USART3,USART_FLAG_TC) != RESET)
     {
       Circle_Read_Byte(&sUart3TxCircleBuf_, &sendData);
-      USART3->DR = (uint16_t)sendData;
+      while (sUart3TxCircleBuf_.unreadLen > 0)
+      {
+        USART3->DR = (uint16_t)sendData;
+        Circle_Read_Byte(&sUart3TxCircleBuf_, &sendData);
+        while(USART_GetFlagStatus(USART3, USART_FLAG_TXE) == RESET)
+        {
+        } //等待字符发送完毕
+      }
     }
   }
   if (sUart1TxCircleBuf_.unreadLen > 0)
@@ -96,10 +103,11 @@ void task_uart_tx(void)
     if (USART_GetFlagStatus(USART1,USART_FLAG_TC) != RESET)
     {
       rs485_select_tx_rx(RS485_TX);
+      Circle_Read_Byte(&sUart1TxCircleBuf_, &sendData);
       while (sUart1TxCircleBuf_.unreadLen > 0)
       {
-        Circle_Read_Byte(&sUart1TxCircleBuf_, &sendData);
         USART1->DR = (uint16_t)sendData;
+        Circle_Read_Byte(&sUart1TxCircleBuf_, &sendData);
         while(USART_GetFlagStatus(USART1, USART_FLAG_TXE) == RESET)
         {
         } //等待字符发送完毕

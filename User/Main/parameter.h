@@ -122,7 +122,8 @@ EXT_GLOBAL S_W5500_CONFIG   sDefaultNetConfig_;
 /*---------------------------------编码器任务--------------------------------*/
 EXT_GLOBAL uint16_t        encoderValue_[100];
 EXT_GLOBAL uint8_t         encoderNum_;
-
+EXT_GLOBAL volatile int64_t         encoderPlusNum_;
+EXT_GLOBAL volatile int8_t          irLocationNum_;
 /*------------------- 接口函数相关定义 -------------------------------*/
 #define   CANOPNE_GET_NODE_STATE        0x01  // 读取节点标志
 
@@ -133,6 +134,10 @@ EXT_GLOBAL uint8_t         rs232RxFlag_;  // 232 接收数据定义
 /*------------------- 电池相关定义 -------------------------------*/
 EXT_GLOBAL sBATTERY        sBattery_;
 EXT_GLOBAL uint8_t         queryRegAddr_;
+
+/*------------------- 电机控制任务相关定义 -------------------------------*/
+EXT_GLOBAL sTASK           _TaskMotorControl;
+EXT_GLOBAL uint32_t        motorMonitoringStatus_;
 /*********************************************************************************************************
 **                                        End Of File
 *********************************************************************************************************/

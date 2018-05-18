@@ -421,11 +421,23 @@ void i32toa(uint32_t n,char *str, uint8_t* len)
 *@param    str:需要转换的asc数据
 *@return   转换完成的数据
 */
-uint32_t atoin32(char* str)
+uint32_t atoin32(char* str,uint8_t len)
 {
   uint32_t num = 0;
-  while (*str !=0)
-          num = num * 10 + ctod(*str++);
+  if (len == 0)
+  {
+    while (*str != 0)
+    {
+      num = num * 10 + ctod(*str++);
+    }
+  }
+  else
+  {
+    while (len-- != 0)
+    {
+      num = num * 10 + ctod(*str++);
+    }
+  }
   return num;
 }
 /**

@@ -90,7 +90,7 @@ void delay_us(u32 usTime);
 
 
 void i32toa(uint32_t n,char *str, uint8_t* len);
-uint32_t atoin32(char* str);
+uint32_t atoin32(char* str,uint8_t len);
 uint8_t ctod(char c );
 #endif
 

@@ -78,7 +78,7 @@ void do_tcp_client(void)
 				recv(SOCK_TCPC,buff,len); 							   		         /*接收来自Server的数据*/
 				buff[len]=0x00;  											                 /*添加字符串结束符*/
 				//printf("%s\r\n",buff);
-				//send(SOCK_TCPC,buff,len -2);								     	         /*向Server发送数据*/
+				send(SOCK_TCPC,buff,len -2);								     	         /*向Server发送数据*/
         rx_data_processing(buff,len,COM_TYPE_ETHERNET);
 			}	
 		  break;

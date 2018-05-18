@@ -58,7 +58,6 @@ uint8_t GetIRLoactionSensor(void);    // 1为有障碍 ， 0为无障碍
                                          //
 //获取编码器的状态
 extern double_t encoderPosition_;
-extern int64_t encoderPlusNum_;
 extern int32_t encoderUpdata;
 //
 //  int32_t GetEncoderRelativePosition(void) ;//编码器区间位置

@@ -141,7 +141,7 @@ static void usart3_NVIC_config(void)
 static void usart3_gpio_config(void)
 {
   GPIO_InitTypeDef GPIO_InitStructure;    ///*  定义GPIO初始化结构体        */
-  RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);  //  使能GPIO外设时钟
+  RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);  //  使能GPIO外设时钟
 
   //   GPIO引脚始化
   GPIO_InitStructure.GPIO_Pin  = GPIO_Pin_11;          // 设置RX引脚模式              */
@@ -175,7 +175,7 @@ static void usart3_parameter_config(void)
   USART_Init(USART3,&USART_InitStructure);              // 初始化
 
   USART_ITConfig(USART3,USART_IT_RXNE,ENABLE);  //  使能UART1空闲中断
- // USART_ITConfig(USART3,USART_IT_IDLE,ENABLE);  //  使能UART1空闲中断
+  USART_ITConfig(USART3,USART_IT_IDLE,ENABLE);  //  使能UART1空闲中断
 
   //启动外设运行
   USART_Cmd(USART3,ENABLE);  // 启动USART3外设
