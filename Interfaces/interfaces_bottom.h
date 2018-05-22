@@ -164,7 +164,69 @@ uint8_t SetMotorTargetPosVel(MotorPosVel *motorParam);
 //  "Step": 20          // I16
 //  }
 //  }
+typedef enum
+{
+  Robot_CMD_Auto = 0, // 自动
+  Robot_CMD_HomingStart, // 回零开始
+  Robot_CMD_Start,    // 开始
+  Robot_CMD_Homing,   // 回零
+  Robot_CMD_Set,      // 设置参数
+  Robot_CMD_Stop,     // 停止
+  Robot_CMD_Forward,  // 向前
+  Robot_CMD_Backward, // 向后
+  Robot_CMD_Jog,      // 手动：手动模式下可使用前进和后退指令，运动固定步长
+  Robot_CMD_Dot,      // 引导模式
+  Robot_CMD_Charging, // 充电模式
+  Robot_CMD_Error     // 错误
+}E_MOTOR_STATE;
+typedef struct
+{
+  E_MOTOR_STATE runStatus;           // 运行状态
+  char          currentTime[30];     // 当前时间
+  char          currentPosition[11]; // 当前位置
+  char          CurrentSpeed[11];    // 当前速度
+  uint16_t      RunningCount;        // 当前巡检次数
+  uint8_t       CurrentTemp;         // 当前温度
+  uint16_t      CurrentVoltage;      // 当前电池电压
+  uint16_t      CurrentAmp;          // 当前电池电流
+  uint8_t       CurrentDir;          // 当前方向 1：正 0 ：负
+  uint16_t      ControlSystemEnergy; // 当前电量百分比
+  uint16_t      DynamicSystemEnergy; // 当前电量百分比
+}S_ROBOT_STATUS;
 
+typedef enum
+{
+  Robot_Work_RealTime = 0,
+  Robot_Work_Regular,
+  Robot_Work_Daily,
+  Robot_Work_Error
+}E_WORK_MODE;
+typedef struct
+{
+  E_MOTOR_STATE eComand; // 命令
+  int16_t      speed;   // 速度
+  uint16_t     runCount; // 运行次数
+  int32_t      startPosition; // 开始位置
+  int32_t      endPosition; // 结束位置
+  int32_t      targetPosition; // 目标位置
+  E_WORK_MODE  eWorkMode[10];    // 工作模式 realtime
+  int16_t      step;           // 手动运动步长
+}S_ROBOT_COMMAND;
+typedef struct ROBOcommand
+{
+    char         Command[10];
+    unsigned int Speed;
+    unsigned int RunCount;
+    unsigned int StartPosition;
+    unsigned int EndPosition;
+    unsigned int TargetPosition;
+    char         WorkMode[10];
+    unsigned int Step;
+}ROBOCmd_TypeDef;
+typedef struct
+{
+  E_MOTOR_STATE eRunState; //工作状态
+}S_ROBOT_STATE;
 
 void test_hardware(void);
 #endif

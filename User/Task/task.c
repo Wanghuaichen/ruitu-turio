@@ -19,6 +19,8 @@ void task_init(void)
   task_add(taskID_++, &_TaskUartTx, task_uart_tx_init);
   task_add(taskID_++, &_TaskConfig, task_config_init);
   task_add(taskID_++, &_TaskMotorControl, task_motor_control_init);
+  task_add(taskID_++, &_TaskMotorState, task_motor_state_init);
+  task_add(taskID_++, &_TaskBattery, task_battery_init);
   task_add(taskID_++, &_TaskIdle, task_idle_init);
 }
 
@@ -118,7 +120,7 @@ void task_idle(void)
   if ((IR_LOCATION_GPIO_Port->IDR & IR_LOCATION_Pin) != (uint32_t)Bit_RESET)
   {
 //    if (((irLocationNum_ - 0) > 2) && ((irLocationNum_ - 0) < 15))
-//    {      
+//    {
 //      encoderNum_++;
 //    }
 //    else if (((0 - irLocationNum_) > 2) && (( 0 - irLocationNum_) < 10))
@@ -134,7 +136,7 @@ void task_idle(void)
     RSV_OUT1_GPIO_Port->BRR = RSV_OUT1_Pin;
     irLocationNum_ =  0;
   }
-    
+
   // HAL_IWDG_Refresh(&hiwdg);           // 喂狗
   _TaskIdle.interval = 100;              // 延时也可用于控制喂狗间隔
   _TaskIdle.state    = TASK_STATE_DELAY; // 任务状态设置

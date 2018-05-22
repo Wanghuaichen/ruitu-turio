@@ -25,8 +25,19 @@
 #define SYNCHRONIZATION_START_ID       0x000600 // 启动周期同步
 #define NMT_BROADCAST_ID               0x000000 // NMT用的广播ID
 #define NMT_NODE_GUARDING_ID           0x000700 // NMT用的节点保护ID
-//
-
+// 定义运动状态
+#define MOTOR_MODE_POSITION       0  // 定义运动为位置模式
+#define MOTOR_MODE_HOMING         1  // 定义运动为回零模式
+// 定义暂停标志
+#define MOTOR_PAUSE_ENABLE_NOT_ACTIVE      0x01 // 因使能状态未激活暂停
+#define MOTOR_PAUSE_OBSTACLE_SENSOR_LEFT   0x02 // 因左避障传感器信号暂停
+#define MOTOR_PAUSE_OBSTACLE_SENSOR_RIGHT  0x04 // 因右避障传感器信号暂停
+#define MOTOR_PAUSE_COMMAND_PAUSE          0x08 // 因上位机下发暂停指令暂停
+#define MOTOR_PAUSE_PUT_RIGHT              0x80 // 允许状态清除后自动恢复支行标志，可设置
+// 定义电机状态
+#define MOTOR_STATE_COMMUNICATION_ERROR    0x10 // 电机状态为通信失败
+#define MOTOR_STATE_HOMING_STATE           0x20 // 电机当前回零状态 置位为回零成功。否则为正在回零中
+#define MOTOR_STATE_MOVE_COMPLETE          0x40 // 电机当前回零状态 置位为回零成功。否则为正在回零中
 /**
  寄存器控制宏定义-位置模式
   配置过程：
@@ -84,10 +95,21 @@ step7:  t 2        //开始进行回零运动
 
 // 寄存器状态定义
 #define MOTOR_REG_STATUS_ENABLE_NOT_ACTIVE        (0x00000800) // 寄存器当前处于非使能状态 11位
+#define MOTOR_REG_STATUS_MOVE_COMPLETE            (0x08000000) // 寄存器当前处于运动完成状态 27位
 #define MOTOR_REG_STATUS_HOMING_SUCCESSFULLY      (0x1000) // 寄存器回零成功状态
 #define MOTOR_REG_STATUS_HOMING_RUNING            (0x2000) // 寄存器正在回零过程中状态
 /*--------------- 变量定义 --------------*/
-
+typedef struct
+{
+  E_MOTOR_STATE eComand; // 命令
+  char          speed[6];   // 速度
+  uint16_t      runCount; // 运行次数
+  char          startPosition[11]; // 开始位置
+  char          endPosition[11]; // 结束位置
+  char          targetPosition[11]; // 目标位置
+  E_WORK_MODE   eWorkMode;    // 工作模式 realtime
+  uint16_t      step;           // 手动运动步长
+}S_MOTOR_PARAM;
 /*--------------- 函数定义 --------------*/
 
 void motor_start_node(void);
@@ -100,9 +122,17 @@ uint8_t motor_set_velocity(uint32_t velocity);
 void motor_start_position_mode(void);
 void task_motor_control_init(void);
 void task_motor_control(void);
+void task_motor_state_init(void);
+void task_motor_state(void);
 uint8_t motor_tx_data_processing(char ins,char *reg,char* sendData,uint16_t len);
 uint8_t motor_rx_data_processing(char *buf,uint16_t len);
-uint8_t motor_mode_home_control(void);
-uint8_t motor_mode_position_control(void);
+uint8_t motor_mode_control(E_MOTOR_STATE* mode);
+uint8_t motor_mode_control_homing(uint8_t step);
+uint8_t motor_mode_control_position(uint8_t step, E_MOTOR_STATE mode);
+void motor_state_Processing(void);
+uint8_t motor_mode_control_stop(uint8_t step);
+uint8_t motor_mode_control_start(uint8_t step);
+uint8_t motor_mode_control_home_start(uint8_t step);
+
 #endif
 

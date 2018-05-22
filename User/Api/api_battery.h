@@ -11,6 +11,9 @@
 #define _API_BATTERY_H_
 #include "include.h"
 /*--------------- 宏定义 --------------*/
+// 定义电池状态
+#define   BATTERY_FLAG_GET_PARAM       0x01
+//
 #define   BATTERY_ADDR             0x01 // 定义电池地址
 #define   BATTERY_FUN_CODE         0x03 // 定义功能码
 // 寄存器地址定义
@@ -32,6 +35,13 @@ typedef struct
 void battery_control(uint8_t regAddr);
 void battery_tx_processing(uint8_t addr,uint8_t funCode, uint8_t regAddr);
 void battery_rx_processing(uint8_t *buf, uint16_t len);
+void task_battery_init(void);
+void task_battery(void);
+void robot_tx_data_conversion(S_ROBOT_STATUS *sStatus);
+void set_robot_command(E_MOTOR_STATE eRobotStatus ,char *buf);
+E_MOTOR_STATE get_robot_command(char *buf);
+E_WORK_MODE get_robot_run_mode(char *buf);
+uint8_t robot_rx_date_coversion(ROBOCmd_TypeDef *sRobotCmd);
 #endif
 
 

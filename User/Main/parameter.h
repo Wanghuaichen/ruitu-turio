@@ -132,12 +132,21 @@ EXT_GLOBAL uint8_t         canRxFlag_;    // can 接收数据定义
 #define RS232_SET_MOTOR_PARAM           0x01  // 设置电机参数标志
 EXT_GLOBAL uint8_t         rs232RxFlag_;  // 232 接收数据定义
 /*------------------- 电池相关定义 -------------------------------*/
+EXT_GLOBAL sTASK           _TaskBattery;
 EXT_GLOBAL sBATTERY        sBattery_;
 EXT_GLOBAL uint8_t         queryRegAddr_;
-
+EXT_GLOBAL uint8_t         batteryStateFlag_;  // 232 接收数据定义
 /*------------------- 电机控制任务相关定义 -------------------------------*/
 EXT_GLOBAL sTASK           _TaskMotorControl;
-EXT_GLOBAL uint32_t        motorMonitoringStatus_;
+EXT_GLOBAL sTASK           _TaskMotorState;
+EXT_GLOBAL char            recMotorStatus_[10][11];
+EXT_GLOBAL uint32_t        motorStatus_[10];
+EXT_GLOBAL uint8_t         motorMode_;
+EXT_GLOBAL uint8_t         motorPauseFlag_;
+EXT_GLOBAL uint8_t         motorFlag_;
+EXT_GLOBAL E_MOTOR_STATE   eMotorControlMode_;
+EXT_GLOBAL S_MOTOR_PARAM   sMotorParam_;
+EXT_GLOBAL S_ROBOT_STATUS  sRobotStatus_;
 /*********************************************************************************************************
 **                                        End Of File
 *********************************************************************************************************/

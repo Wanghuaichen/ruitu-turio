@@ -346,6 +346,10 @@
             <F N="../Libraries/StdPeriph_Driver/src/stm32f10x_usart.c"/>
             <F N="../Libraries/StdPeriph_Driver/src/stm32f10x_wwdg.c"/>
         </Folder>
+        <Folder Name="../ThirdLib/cjson">
+            <F N="../ThirdLib/cjson/cJSON.c"/>
+            <F N="../ThirdLib/cjson/cJSON.h"/>
+        </Folder>
         <Folder Name="../ThirdLib/socket">
             <F N="../ThirdLib/socket/socket.c"/>
             <F N="../ThirdLib/socket/socket.h"/>
@@ -378,6 +382,8 @@
             <F N="../User/App/app_uart.h"/>
         </Folder>
         <Folder Name="../User/Bfm">
+            <F N="../User/Bfm/bfm_18B20.c"/>
+            <F N="../User/Bfm/bfm_18B20.h"/>
             <F N="../User/Bfm/bfm_w5500.c"/>
             <F N="../User/Bfm/bfm_w5500.h"/>
         </Folder>
@@ -394,6 +400,7 @@
             <F N="../User/Main/stm32f10x_it.h"/>
             <F N="../User/Main/system_stm32f10x.c"/>
             <F N="../User/Main/system_stm32f10x.h"/>
+            <F N="../User/Main/tcp_demo.h"/>
         </Folder>
         <Folder Name="../User/Ocp">
             <F N="../User/Ocp/ocp_adc.c"/>

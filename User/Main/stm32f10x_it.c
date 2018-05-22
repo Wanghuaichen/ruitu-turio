@@ -328,12 +328,14 @@ void TIM2_IRQHandler(void)
     if (encoderNew > 20)
     {
       encoderPlusNum_--;
+      sRobotStatus_.CurrentDir = 0;
       if ((IR_LOCATION_GPIO_Port->IDR & IR_LOCATION_Pin) == (uint32_t)Bit_RESET)
         irLocationNum_++;
-    }    
+    }
     else
     {
       encoderPlusNum_++;
+      sRobotStatus_.CurrentDir = 1;
       if ((IR_LOCATION_GPIO_Port->IDR & IR_LOCATION_Pin) == (uint32_t)Bit_RESET)
         irLocationNum_--;
       if ((0 - irLocationNum_) > 28)

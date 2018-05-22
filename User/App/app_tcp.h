@@ -17,5 +17,7 @@
 /*--------------- º¯Êý¶¨Òå --------------*/
 void do_tcp_server(void);
 void do_tcp_client(void);
+void ethernet_printf(char *buf, uint16_t len);
+void ethernet_rx_data_processing(char *buf,uint16_t len);
 #endif
 

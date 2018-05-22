@@ -76,11 +76,15 @@ typedef union
 #include "app_gpio.h"
 #include "app_pt100.h"
 
+#include "tcp_demo.h"
 #include "api_dataPro.h"
 #include "api_motor.h"
 #include "api_battery.h"
+
+
 #include "w5500_config.h"
 #include "socket.h"
+#include "cJSON.h"
 
 // 系统头文件
 #include "Param.h"

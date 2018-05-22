@@ -133,13 +133,161 @@ void battery_rx_processing(uint8_t *buf, uint16_t len)
     {
       sBattery_.batteryCurrent = ((buf[3] << 8) & 0xFF00) + (buf[4] & 0xFF);
     }
-
+    batteryStateFlag_ |= BATTERY_FLAG_GET_PARAM;
   }
 }
 void battery_control(uint8_t regAddr)
 {
+  batteryStateFlag_ &= ~BATTERY_FLAG_GET_PARAM;
   battery_tx_processing(BATTERY_ADDR,BATTERY_FUN_CODE,regAddr);
 }
+void task_battery_init(void)
+{
+  _TaskBattery.fun = task_battery;
+  batteryStateFlag_ |= BATTERY_FLAG_GET_PARAM;
+  _TaskBattery.state    = TASK_STATE_RUN;
+}
+void task_battery(void)
+{
+  static uint8_t i = 0;
+  _TaskBattery.interval = 1000;
+  _TaskBattery.state    = TASK_STATE_DELAY;
+  if (batteryStateFlag_ & BATTERY_FLAG_GET_PARAM)
+  {
+    switch (i++)
+    {
+        case 0:queryRegAddr_ = BATTERY_REG_VOTAGE;break;
+        case 1:queryRegAddr_ = BATTERY_REG_VOTAGE_PERCENT;break;
+        case 2:queryRegAddr_ = BATTERY_REG_CURRENT;break;
+    }
+    if (i >= 3)
+      i = 0;
+    battery_control(queryRegAddr_ );
+  }
+  sRobotStatus_.CurrentVoltage = sBattery_.batteryVoltage;
+  sRobotStatus_.CurrentAmp = sBattery_.batteryCurrent;
+  sRobotStatus_.ControlSystemEnergy = sBattery_.batteryPercent;
+  sRobotStatus_.DynamicSystemEnergy = sBattery_.batteryPercent;
+  robot_tx_data_conversion(&sRobotStatus_);
+}
+
+
+uint8_t robot_rx_date_coversion(ROBOCmd_TypeDef *sRobotCmd)
+{
+  uint8_t len;
+  // 读取参数
+  sMotorParam_.eComand = get_robot_command(sRobotCmd->Command); // 获取命令
+  if (sRobotStatus_.runStatus == sMotorParam_.eComand) // 相同命令返回
+    return 1;
+  else if (sMotorParam_.eComand == Robot_CMD_Stop) // 其它任何状态都可以切换到stop
+    sRobotStatus_.runStatus = Robot_CMD_Stop;
+  else if (sRobotStatus_.runStatus == Robot_CMD_Stop) // stop状态
+  {
+      if (sMotorParam_.eComand == Robot_CMD_Set) // stop状态可设置
+      {
+        i32toa(sRobotCmd->Speed * MOTOR_COUNTS_VELOCITY, sMotorParam_.speed, &len); // 速度
+        i32toa(sRobotCmd->StartPosition * MOTOR_COUNTS_POSITION, sMotorParam_.startPosition, &len); // 开始位置
+        i32toa(sRobotCmd->EndPosition * MOTOR_COUNTS_POSITION, sMotorParam_.endPosition, &len); // 结束位置
+        i32toa(sRobotCmd->TargetPosition * MOTOR_COUNTS_POSITION, sMotorParam_.targetPosition, &len); // 目标位置
+        sMotorParam_.step = sRobotCmd->Step ;                              // 步长
+        sMotorParam_.eWorkMode = get_robot_run_mode(sRobotCmd->WorkMode);  // 工作模式
+      }
+      else if ((sMotorParam_.eComand == Robot_CMD_Auto)  //stop状态可切换状态
+              ||(sMotorParam_.eComand == Robot_CMD_Jog)
+              ||(sMotorParam_.eComand == Robot_CMD_Dot)
+              ||(sMotorParam_.eComand == Robot_CMD_Homing)
+              )
+      {
+        sRobotStatus_.runStatus = sMotorParam_.eComand;
+      }
+
+  }
+  else if (((sMotorParam_.eComand == Robot_CMD_Forward)   // 手动模式处理
+          || (sMotorParam_.eComand == Robot_CMD_Backward))
+          && (sRobotStatus_.runStatus == Robot_CMD_Jog)
+          )
+  {
+    sRobotStatus_.runStatus = sMotorParam_.eComand;
+  }
+  else
+    return 1;
+
+  // 停止操作
+  _TaskMotorControl.progressBar = 0;
+  _TaskMotorControl.state = TASK_STATE_RUN;
+  return 1;
+}
+void robot_tx_data_conversion(S_ROBOT_STATUS *sStatus)
+{
+  ROBOStatus_TypeDef recRobotStatus;
+  set_robot_command(sStatus->runStatus,recRobotStatus.RunStatus);
+  strcpy(recRobotStatus.CurrentTime, "2017-10-13 17:27:30\0");
+  recRobotStatus.CurrentPositiont = motorStatus_[0];
+  recRobotStatus.CurrentSpeed = atoin32(sStatus->CurrentSpeed,0);
+  recRobotStatus.RunningCount = sStatus->RunningCount;
+  recRobotStatus.CurrentTemp = sStatus->CurrentTemp;
+  recRobotStatus.CurrentVoltage = (float)(sStatus->CurrentVoltage / 100);
+  recRobotStatus.CurrentAmp = (float)(sStatus->CurrentAmp/100);
+  recRobotStatus.CurrentDir = sStatus->CurrentDir;
+
+  recRobotStatus.ControlSystemEnergy = (float)(sStatus->ControlSystemEnergy/100);
+  recRobotStatus.DynamicSystemEnergy = recRobotStatus.ControlSystemEnergy;
+
+}
+
+E_MOTOR_STATE get_robot_command(char *buf)
+{
+  if (strcmp(buf, "Auto") == 0)
+    return Robot_CMD_Auto;
+  else if (strcmp(buf, "Set") == 0)
+    return Robot_CMD_Set;
+  else if (strcmp(buf, "Jog") == 0)
+    return Robot_CMD_Jog;
+  else if (strcmp(buf, "Stop") == 0)
+    return Robot_CMD_Stop;
+  else if (strcmp(buf, "Forward") == 0)
+    return Robot_CMD_Forward;
+  else if (strcmp(buf, "Backward") == 0)
+    return Robot_CMD_Backward;
+  else if (strcmp(buf, "Dot") == 0)
+    return Robot_CMD_Dot;
+  else if (strcmp(buf, "Homing") == 0)
+    return Robot_CMD_Homing;
+  else
+    return Robot_CMD_Error;
+}
+E_WORK_MODE get_robot_run_mode(char *buf)
+{
+  if (strcmp(buf, "RealTime") == 0)
+    return Robot_Work_RealTime;
+  else if (strcmp(buf, "Regular") == 0)
+    return Robot_Work_Regular;
+  else if (strcmp(buf, "Daily") == 0)
+    return Robot_Work_Daily;
+  else
+    return Robot_Work_Error;
+}
+void set_robot_command(E_MOTOR_STATE eRobotStatus ,char *buf)
+{
+
+  if (eRobotStatus ==  Robot_CMD_Auto)
+    strcpy(buf,"Auto\0");
+  else if (eRobotStatus ==  Robot_CMD_Set)
+    strcpy(buf, "Set\0");
+  else if (eRobotStatus ==  Robot_CMD_Jog)
+    strcpy(buf, "Jog\0");
+  else if (eRobotStatus ==  Robot_CMD_Stop)
+    strcpy(buf, "Stop\0");
+  else if (eRobotStatus ==  Robot_CMD_Forward)
+    strcpy(buf, "Forward\0");
+  else if (eRobotStatus ==  Robot_CMD_Backward)
+    strcpy(buf, "Backward\0");
+  else if (eRobotStatus ==  Robot_CMD_Dot)
+    strcpy(buf, "Dot\0");
+  else if (eRobotStatus ==  Robot_CMD_Homing)
+    strcpy(buf, "Homing\0");
+}
+
 /*********************************************************************************************************
 **                                        End Of File
 *********************************************************************************************************/
