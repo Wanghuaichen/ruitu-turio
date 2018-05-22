@@ -276,6 +276,7 @@ void task_motor_state(void)
       case 0: gerReg = MOTOR_REG_GET_ACTUAL_POSITION;break;
       case 1: gerReg = MOTOR_REG_GET_MONITORING_STATUS;break;
       case 2: gerReg = MOTOR_REG_GET_TRAJECTORY_STATUS;break;
+      case 3: gerReg = MOTOR_REG_GET_ACTUAL_VELOCITY;break;
       default:break;
   }
   _TaskMotorState.interval = 100;
@@ -292,13 +293,12 @@ void task_motor_state(void)
     {
       memcpy(recMotorStatus_[state],rs232RxData,sizeof(rs232RxData));
       memset(rs232RxData,0,sizeof(rs232RxData));
-      if (++state >= 3)
+      if (++state >= 4)
         state = 0;
       _TaskMotorState.progressBar--;
     }
   }
   motor_state_Processing();
-
 }
 /**
 *@function void motor_state_Processing(void)
@@ -311,6 +311,7 @@ void motor_state_Processing(void)
   motorStatus_[1] = atoin32(recMotorStatus_[1],0);
   motorStatus_[2] = atoin32(recMotorStatus_[2],0);
   motorStatus_[0] = atoin32(recMotorStatus_[0],0);
+  motorStatus_[3] = atoin32(recMotorStatus_[0],0);
   // 判断电机enable脚状态
   if (motorStatus_ [1] & MOTOR_REG_STATUS_ENABLE_NOT_ACTIVE)
     motorPauseFlag_ |= MOTOR_PAUSE_ENABLE_NOT_ACTIVE;
@@ -327,14 +328,6 @@ void motor_state_Processing(void)
   if (motorStatus_[2] & MOTOR_REG_STATUS_HOMING_SUCCESSFULLY) // 成功
     motorFlag_ |= MOTOR_STATE_HOMING_STATE;
 
-  if (GetLeftObstacleSensor() == 0)
-    motorPauseFlag_ |= MOTOR_PAUSE_OBSTACLE_SENSOR_LEFT;
-  else
-    motorPauseFlag_ &= ~MOTOR_PAUSE_OBSTACLE_SENSOR_LEFT;
-  if (GetRightObstacleSensor() == 0)
-    motorPauseFlag_ |= MOTOR_PAUSE_OBSTACLE_SENSOR_RIGHT;
-  else
-    motorPauseFlag_ &= ~MOTOR_PAUSE_OBSTACLE_SENSOR_RIGHT;
 }
 /**
 *@function uint8_t motor_tx_data_processing(char ins, char *reg, uintbuf, uint16_t len)
@@ -356,7 +349,6 @@ uint8_t motor_tx_data_processing(char ins,char *reg,char* sendData,uint16_t len)
   strcat(sendAsc, reg);
   if (len > 0)
   {
-//    i32toa(sendData,trans,&length);
     strcat(sendAsc, sendData);
     length += strlen(sendData);
   }
@@ -375,8 +367,6 @@ uint8_t motor_tx_data_processing(char ins,char *reg,char* sendData,uint16_t len)
 */
 uint8_t motor_rx_data_processing(char *buf,uint16_t len)
 {
-//  char recData[10] = "\0";
-//  uint8_t j,i = 0;
   if ((buf[0] == 'o')&& (buf[1] == 'k'))
   {
     if ( (rs232RxFlag_ & RS232_SET_MOTOR_PARAM) != RS232_SET_MOTOR_PARAM)
@@ -385,11 +375,6 @@ uint8_t motor_rx_data_processing(char *buf,uint16_t len)
   else if ((buf[0] == 'v') && (buf[1] == ' '))
   {
     memcpy(rs232RxData,&buf[2], len - 3);
-//    i = len - 2;
-//    for (j = 0; j < (len - 3); j++)
-//    {
-//      rs232RxData[j] = buf[i--];
-//    }
     rs232RxFlag_ |= RS232_SET_MOTOR_PARAM;
   }
   return 1;
@@ -575,7 +560,53 @@ uint8_t motor_mode_control_stop(uint8_t step)
     }
   return 0;
 }
+/**
+*@function void SetCAN(uint8_t state)
+*@brief    通过canopen设置电机
+*@param    state：ENABLE / DISABLE
+*@return   无
+*@date     2018/5/14
+*/
+void SetCAN(uint8_t state)
+{
+  if (state == DISABLE) // 关闭节点
+  {
+    motor_stop_node();
+  }
+  else
+  {
+    motor_set_syn_cycle(); // 设置同步周期
+    motor_start_syn();     // 开启同步
+    motor_start_node();    // 开启节点
+  }
+}
+/**
+*@function void SetMotor(uint8_t state)
+*@brief    设置电压enable口状态
+*@param    state：ENABLE/DISABLE
+*@return   无
+*@date     2018/5/14
+*/
+void SetMotor(uint8_t state)
+{
+  if (state == DISABLE)
+    GPIO_ResetBits(MOTOR_ENABLE_GPIO_Port, MOTOR_ENABLE_Pin);
+  else
+    GPIO_SetBits(MOTOR_ENABLE_GPIO_Port, MOTOR_ENABLE_Pin);
+}
 
+/**
+*@function uint8_t GetMotorState(uint8_t *buf, uint8_t len)
+*@brief    获取电机状态,
+*@param    buf:状态数据
+*@param    len:状态数据长度
+*@return   1:成功 0:失败
+*@date     2018/5/14
+*/
+uint8_t GetMotorState(uint8_t *buf,uint8_t len)
+{
+  return motor_get_state(buf,len);
+}
 /*********************************************************************************************************
 **                                        End Of File
 *********************************************************************************************************/

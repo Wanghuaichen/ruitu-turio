@@ -11,11 +11,17 @@
 #define _API_BATTERY_H_
 #include "include.h"
 /*--------------- 宏定义 --------------*/
+#define   FAN1          0
+#define   FAN2          1
+// LED状态
+#define   LED_ON        2
+#define   LED_OFF       0
+#define   LED_BLINKING  1
 // 定义电池状态
 #define   BATTERY_FLAG_GET_PARAM       0x01
 //
-#define   BATTERY_ADDR             0x01 // 定义电池地址
-#define   BATTERY_FUN_CODE         0x03 // 定义功能码
+#define   BATTERY_ADDR                  0x01 // 定义电池地址
+#define   BATTERY_FUN_CODE              0x03 // 定义功能码
 // 寄存器地址定义
 #define   BATTERY_REG_OVER_VOLTAGE         0x00 // 定义单体过压寄存器地址
 #define   BATTERY_REG_RELEASE_OVER         0x01 // 定义单体过压寄存器地址

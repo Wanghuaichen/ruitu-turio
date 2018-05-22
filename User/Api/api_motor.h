@@ -13,6 +13,7 @@
 /*--------------- 宏定义 --------------*/
 // 针对canopen定义
 #define DEVICE_ID                      0x01 // 设备ID
+
 // nmt令指定义
 #define NMT_START_REMOTE_NODE              1 // 开启远程节点
 #define NMT_STOP_REMOTE_NODE               2 // 关闭远程节点
@@ -92,13 +93,74 @@ step7:  t 2        //开始进行回零运动
 #define MOTOR_REG_GET_MONITORING_STATUS     "r0xa0 " // 读控制器寄存器状态指令
 #define MOTOR_REG_GET_ACTUAL_POSITION       "r0x32 " // 读控制器实际位置指令
 #define MOTOR_REG_GET_TRAJECTORY_STATUS     "r0xc9 " // 读控制器运动状态寄存器指令 12 、13位
+#define MOTOR_REG_GET_ACTUAL_VELOCITY       "r0x18 " // 读控制器实际速度
 
 // 寄存器状态定义
-#define MOTOR_REG_STATUS_ENABLE_NOT_ACTIVE        (0x00000800) // 寄存器当前处于非使能状态 11位
-#define MOTOR_REG_STATUS_MOVE_COMPLETE            (0x08000000) // 寄存器当前处于运动完成状态 27位
-#define MOTOR_REG_STATUS_HOMING_SUCCESSFULLY      (0x1000) // 寄存器回零成功状态
-#define MOTOR_REG_STATUS_HOMING_RUNING            (0x2000) // 寄存器正在回零过程中状态
+#define MOTOR_REG_STATUS_ENABLE_NOT_ACTIVE        (0x00000800) // 寄存器当前处于非使能状态 0xa0  11位
+#define MOTOR_REG_STATUS_MOVE_COMPLETE            (0x08000000) // 寄存器当前处于运动完成状态 0xa0 27位
+#define MOTOR_REG_STATUS_HOMING_SUCCESSFULLY      (0x1000) // 寄存器回零成功状态     0xc9 12位
+#define MOTOR_REG_STATUS_HOMING_RUNING            (0x2000) // 寄存器正在回零过程中状态 0xc9 13位
 /*--------------- 变量定义 --------------*/
+typedef enum
+{
+  Robot_CMD_Auto = 0, // 自动
+  Robot_CMD_HomingStart, // 回零开始
+  Robot_CMD_Start,    // 开始
+  Robot_CMD_Homing,   // 回零
+  Robot_CMD_Set,      // 设置参数
+  Robot_CMD_Stop,     // 停止
+  Robot_CMD_Forward,  // 向前
+  Robot_CMD_Backward, // 向后
+  Robot_CMD_Jog,      // 手动：手动模式下可使用前进和后退指令，运动固定步长
+  Robot_CMD_Dot,      // 引导模式
+  Robot_CMD_Charging, // 充电模式
+  Robot_CMD_Error     // 错误
+}E_MOTOR_STATE;
+typedef struct
+{
+  E_MOTOR_STATE runStatus;           // 运行状态
+  char          currentTime[30];     // 当前时间
+  char          currentPosition[11]; // 当前位置
+  char          CurrentSpeed[11];    // 当前速度
+  uint16_t      RunningCount;        // 当前巡检次数
+  uint8_t       CurrentTemp;         // 当前温度
+  uint16_t      CurrentVoltage;      // 当前电池电压
+  uint16_t      CurrentAmp;          // 当前电池电流
+  uint8_t       CurrentDir;          // 当前方向 1：正 0 ：负
+  uint16_t      ControlSystemEnergy; // 当前电量百分比
+  uint16_t      DynamicSystemEnergy; // 当前电量百分比
+}S_ROBOT_STATUS;
+
+typedef enum
+{
+  Robot_Work_RealTime = 0,
+  Robot_Work_Regular,
+  Robot_Work_Daily,
+  Robot_Work_Error
+}E_WORK_MODE;
+typedef struct
+{
+  E_MOTOR_STATE eComand; // 命令
+  int16_t      speed;   // 速度
+  uint16_t     runCount; // 运行次数
+  int32_t      startPosition; // 开始位置
+  int32_t      endPosition; // 结束位置
+  int32_t      targetPosition; // 目标位置
+  E_WORK_MODE  eWorkMode[10];    // 工作模式 realtime
+  int16_t      step;           // 手动运动步长
+}S_ROBOT_COMMAND;
+//typedef struct ROBOcommand
+//{
+//    char         Command[10];
+//    unsigned int Speed;
+//    unsigned int RunCount;
+//    unsigned int StartPosition;
+//    unsigned int EndPosition;
+//    unsigned int TargetPosition;
+//    char         WorkMode[10];
+//    unsigned int Step;
+//}ROBOCmd_TypeDef;
+
 typedef struct
 {
   E_MOTOR_STATE eComand; // 命令
@@ -133,6 +195,8 @@ void motor_state_Processing(void);
 uint8_t motor_mode_control_stop(uint8_t step);
 uint8_t motor_mode_control_start(uint8_t step);
 uint8_t motor_mode_control_home_start(uint8_t step);
-
+uint8_t GetMotorState(uint8_t *buf,uint8_t len);
+void SetMotor(uint8_t state);
+void SetCAN(uint8_t state);
 #endif
 

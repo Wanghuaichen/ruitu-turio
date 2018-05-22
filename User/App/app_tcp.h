@@ -15,9 +15,10 @@
 /*--------------- 变量定义 --------------*/
 
 /*--------------- 函数定义 --------------*/
-void do_tcp_server(void);
-void do_tcp_client(void);
-void ethernet_printf(char *buf, uint16_t len);
-void ethernet_rx_data_processing(char *buf,uint16_t len);
+void Command_tcp_client(void);
+void Status_tcp_client(void);
+void task_tcp_init(void);
+void task_tcp(void);
+
 #endif
 

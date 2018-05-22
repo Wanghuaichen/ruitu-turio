@@ -21,6 +21,9 @@ void task_init(void)
   task_add(taskID_++, &_TaskMotorControl, task_motor_control_init);
   task_add(taskID_++, &_TaskMotorState, task_motor_state_init);
   task_add(taskID_++, &_TaskBattery, task_battery_init);
+  task_add(taskID_++, &_TaskSensors, task_sensors_init );
+  task_add(taskID_++, &_TaskCanRx, task_can_rx_init);
+  task_add(taskID_++, &_TaskTcp, task_tcp_init);
   task_add(taskID_++, &_TaskIdle, task_idle_init);
 }
 
@@ -115,26 +118,6 @@ void task_idle(void)
   {
     gpio_toggle_pin(LED_SYS_GPIO_Port, LED_SYS_Pin);
     control_blinking();
-  }
-  test_hardware();
-  if ((IR_LOCATION_GPIO_Port->IDR & IR_LOCATION_Pin) != (uint32_t)Bit_RESET)
-  {
-//    if (((irLocationNum_ - 0) > 2) && ((irLocationNum_ - 0) < 15))
-//    {
-//      encoderNum_++;
-//    }
-//    else if (((0 - irLocationNum_) > 2) && (( 0 - irLocationNum_) < 10))
-//    {
-//      encoderNum_--;
-//    }
-//    else if (( 0 - irLocationNum_) > 15)
-//    {
-//      encoderNum_ = 0;
-//      printf( "%s %d\n","t",0);
-//    }
-
-    RSV_OUT1_GPIO_Port->BRR = RSV_OUT1_Pin;
-    irLocationNum_ =  0;
   }
 
   // HAL_IWDG_Refresh(&hiwdg);           // Î¹¹·

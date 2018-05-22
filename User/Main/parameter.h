@@ -117,11 +117,13 @@ EXT_GLOBAL sCAN_BUF         sCan1Buf_;
 EXT_GLOBAL sCAN_BUF         sCan2Buf_;
 
 /*--------------------------------网络任务定义------------------------------*/
+EXT_GLOBAL sTASK            _TaskTcp;
 EXT_GLOBAL S_W5500_CONFIG   sDefaultNetConfig_;
 
 /*---------------------------------编码器任务--------------------------------*/
 EXT_GLOBAL uint16_t        encoderValue_[100];
-EXT_GLOBAL uint8_t         encoderNum_;
+EXT_GLOBAL uint8_t         segmentNum_;
+EXT_GLOBAL uint8_t         homingDistance_;
 EXT_GLOBAL volatile int64_t         encoderPlusNum_;
 EXT_GLOBAL volatile int8_t          irLocationNum_;
 /*------------------- 接口函数相关定义 -------------------------------*/
@@ -147,6 +149,10 @@ EXT_GLOBAL uint8_t         motorFlag_;
 EXT_GLOBAL E_MOTOR_STATE   eMotorControlMode_;
 EXT_GLOBAL S_MOTOR_PARAM   sMotorParam_;
 EXT_GLOBAL S_ROBOT_STATUS  sRobotStatus_;
+/*------------------- 读取温度值 -------------------------------*/
+EXT_GLOBAL sTASK           _TaskRead18B20;
+/*------------------- 传感器处理 -------------------------------*/
+EXT_GLOBAL sTASK           _TaskSensors;
 /*********************************************************************************************************
 **                                        End Of File
 *********************************************************************************************************/

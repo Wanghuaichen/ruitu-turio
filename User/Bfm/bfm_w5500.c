@@ -9,7 +9,6 @@
 */
 #include "include.h"
 #include "w5500_config.h"
-uint16_t local_port=502;                                  /*定义本地端口*/
 
 void w5500_config_ip(S_W5500_CONFIG *configData, uint8_t readOrWrite)
 {

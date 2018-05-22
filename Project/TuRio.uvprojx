@@ -675,9 +675,14 @@
           <GroupName>Interfaces</GroupName>
           <Files>
             <File>
-              <FileName>interfaces_bottom.c</FileName>
+              <FileName>tcp_demo.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Interfaces\interfaces_bottom.c</FilePath>
+              <FilePath>..\Interfaces\tcp_demo.c</FilePath>
+            </File>
+            <File>
+              <FileName>malloc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Interfaces\malloc.c</FilePath>
             </File>
           </Files>
         </Group>

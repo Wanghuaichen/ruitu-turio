@@ -56,7 +56,9 @@ typedef union
 
 // 芯片头文件
 #include "stm32f10x_conf.h"
-#include "interfaces_bottom.h"
+#include "malloc.h"
+#include "cJSON.h"
+#include "tcp_demo.h"
 // 应用头文件
 #include "main.h"
 
@@ -76,7 +78,7 @@ typedef union
 #include "app_gpio.h"
 #include "app_pt100.h"
 
-#include "tcp_demo.h"
+
 #include "api_dataPro.h"
 #include "api_motor.h"
 #include "api_battery.h"
@@ -84,7 +86,7 @@ typedef union
 
 #include "w5500_config.h"
 #include "socket.h"
-#include "cJSON.h"
+
 
 // 系统头文件
 #include "Param.h"

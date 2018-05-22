@@ -265,38 +265,196 @@ void control_init(void)
   control_run_led(ON);
   control_route_power(ON);
 }
-void control_all_on(void)
+
+/*-------------------  电源控制 -------------------------------*/
+/**
+*@function void SetFan(uint8_t fan, uint8_t state)
+*@brief    对风扇电源进行控制
+*@param    fan :FAN1/FAN2
+*@param    state ：状态ENABLE/DISABLE
+*@return   无
+*/
+void SetFan(uint8_t fan,uint8_t state)
 {
-  control_battery_led(ON);
-  control_ethernet_led(ON);
-  control_fan1_power(ON);
-  control_fan2_power(ON);
-  control_imu_power(ON);
-  control_left_oas_led(ON);
-  control_lidar_power(ON);
-  control_motort_enable(ON);
-  control_reserved_out1(ON);
-  control_reserved_out2(ON);
-  control_reserved_out3(ON);
-  control_right_oas_led(ON);
-  control_run_led(ON);
-  control_route_power(ON);
+  if (state == ENABLE)
+  {
+    if (fan == FAN1)
+      control_fan1_power(OUT_CONTROL_ON);
+    else
+      control_fan2_power(OUT_CONTROL_ON);
+  }
+  else
+  {
+    if (fan == FAN1)
+      control_fan1_power(OUT_CONTROL_OFF);
+    else
+      control_fan2_power(OUT_CONTROL_OFF);
+  }
 }
-void control_all_off(void)
+/**
+*@function void SetRadar(uint8_t state)
+*@brief    雷达电源控制
+*@param    state ：ENABLE/DISABLE
+*@return   无
+*/
+void SetRadar(uint8_t state)
 {
-  control_battery_led(OFF);
-  control_ethernet_led(OFF);
-  control_fan1_power(OFF);
-  control_fan2_power(OFF);
-  control_imu_power(OFF);
-  control_left_oas_led(OFF);
-  control_lidar_power(OFF);
-  control_motort_enable(OFF);
-  control_reserved_out1(OFF);
-  control_reserved_out2(OFF);
-  control_reserved_out3(OFF);
-  control_right_oas_led(OFF);
-  control_run_led(OFF);
-  control_route_power(OFF);
+  if (state == ENABLE)
+    control_lidar_power(OUT_CONTROL_ON);
+  else
+    control_lidar_power(OUT_CONTROL_OFF);
+}
+/**
+*@function void SetRoute(uint8_t state)
+*@brief     路由电源控制
+*@param    state ：ENABLE/DISABLE
+*@return   无
+*/
+void SetRoute(uint8_t state)
+{
+  if (state == ENABLE)
+    control_route_power(OUT_CONTROL_ON);
+  else
+    control_route_power(OUT_CONTROL_OFF);
+}
+/**
+*@function void SetIMU(uint8_t state)
+*@brief    imu电源控制
+*@param    state :ENABLE/DISABLE
+*@return   无
+*/
+void SetIMU(uint8_t state)
+{
+  if (state == ENABLE)
+    control_imu_power(OUT_CONTROL_ON);
+  else
+    control_imu_power(OUT_CONTROL_OFF);
+}
+/**
+*@function uint8_t GetLeftObstacleSensor(void)
+*@brief   获取输入的障避传感器的值
+*@param    void :空
+*@return   无
+*/
+uint8_t GetLeftObstacleSensor(void)
+{
+  if (GPIO_ReadInputDataBit(OAS_LEFT_GPIO_Port, OAS_LEFT_Pin) != Bit_RESET)
+    return 1;
+  else
+    return 0;
+}
+/**
+*@function uint8_t GetRightObstacleSensor(void)
+*@brief    读取右避障传感器输入值
+*@param    void :空
+*@return   无
+*/
+uint8_t GetRightObstacleSensor(void)
+{
+  if (GPIO_ReadInputDataBit(OAS_RIGHT_GPIO_Port, OAS_RIGHT_Pin) != Bit_RESET)
+    return 1;
+  else
+    return 0;
+}
+/**
+*@function void SetLeftObstacleLed(uint8_t state)
+*@brief    对左侧避障报警灯控制
+*@param    state :LED_ON/LED_OFF/LED_BLINKING
+*@return   无
+*/
+void SetLeftObstacleLed(uint8_t state)
+{
+  if (state == LED_ON)
+    control_left_oas_led(OUT_CONTROL_ON);
+  else if (state == LED_BLINKING)
+    control_left_oas_led(OUT_CONTROL_BLINKING);
+  else
+    control_left_oas_led(OUT_CONTROL_OFF);
+}
+/**
+*@function void SetLeftObstacleLed(uint8_t state)
+*@brief    对右侧避障报警灯控制
+*@param    state :LED_ON/LED_OFF/LED_BLINKING
+*@return   无
+*/
+void SetRightObstacleLed(uint8_t state)
+{
+  if (state == LED_ON)
+    control_right_oas_led(OUT_CONTROL_ON);
+  else if (state == LED_BLINKING)
+    control_right_oas_led(OUT_CONTROL_BLINKING);
+  else
+    control_right_oas_led(OUT_CONTROL_OFF);
 }
 
+/**
+*@function uint8_t GetIRLoactionSensor(void)
+*@brief    获取光电定位信号
+*@param    void :空
+*@return   无
+*/
+uint8_t GetIRLoactionSensor(void)
+{
+  if (GPIO_ReadInputDataBit(IR_LOCATION_GPIO_Port, IR_LOCATION_Pin) != Bit_RESET)
+    return 1;
+  else
+    return 0;
+}
+
+void task_sensors_init(void)
+{
+  _TaskSensors.fun = task_sensors;
+  _TaskSensors.state = TASK_STATE_RUN;
+  segmentNum_ = 0;
+  irLocationNum_ = 0;
+  homingDistance_ = 28;
+}
+void task_sensors(void)
+{
+  #define FILTER_TIMES   2
+  static uint8_t leftFilter = 0,rightFilter = 0;
+  _TaskSensors.interval = 5;
+  _TaskSensors.state    = TASK_STATE_DELAY;
+   // 判断左侧避障开关是否有障碍，并操作对应LED
+  if (GetLeftObstacleSensor() == 0)
+  {
+    if (++leftFilter > FILTER_TIMES) // 延时判断
+    {
+      motorPauseFlag_ |= MOTOR_PAUSE_OBSTACLE_SENSOR_LEFT;
+      control_left_oas_led(OUT_CONTROL_ON);
+    }
+  }
+  else
+  {
+    leftFilter = 0;
+    motorPauseFlag_ &= ~MOTOR_PAUSE_OBSTACLE_SENSOR_LEFT;
+    control_left_oas_led(OUT_CONTROL_OFF);
+  }
+  // 判断右侧避障开关是否有障碍，并操作对应LED
+  if (GetRightObstacleSensor() == 0)
+  {
+    if (++rightFilter > FILTER_TIMES) // 延时判断
+    {
+      motorPauseFlag_ |= MOTOR_PAUSE_OBSTACLE_SENSOR_RIGHT;
+      control_right_oas_led(OUT_CONTROL_ON);
+    }
+  }
+  else
+  {
+    rightFilter = 0;
+    motorPauseFlag_ &= ~MOTOR_PAUSE_OBSTACLE_SENSOR_RIGHT;
+    control_right_oas_led(OUT_CONTROL_OFF);
+  }
+  if ((IR_LOCATION_GPIO_Port->IDR & IR_LOCATION_Pin) != (uint32_t)Bit_RESET)
+  {
+    if (irLocationNum_ > 3)
+      segmentNum_++;
+    else if (irLocationNum_ < -3)
+    {
+      segmentNum_--;
+    }
+    irLocationNum_ = 0;
+    RSV_OUT1_GPIO_Port->BRR = RSV_OUT1_Pin;
+    irLocationNum_ =  0;
+  }
+}

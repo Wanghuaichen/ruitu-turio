@@ -10,6 +10,7 @@
 #define SOCK_HUMTEM			  		0
 #define SOCK_PING			  			0
 #define SOCK_TCPC             1
+#define SOCK_TCPC2            0
 #define SOCK_UDPS             2
 #define SOCK_WEIBO      	  	2
 #define SOCK_DHCP             3

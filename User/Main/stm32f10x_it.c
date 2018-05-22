@@ -338,7 +338,7 @@ void TIM2_IRQHandler(void)
       sRobotStatus_.CurrentDir = 1;
       if ((IR_LOCATION_GPIO_Port->IDR & IR_LOCATION_Pin) == (uint32_t)Bit_RESET)
         irLocationNum_--;
-      if ((0 - irLocationNum_) > 28)
+      if ((0 - irLocationNum_) > homingDistance_)
       {
         //MOTOR_ENABLE_GPIO_Port->BRR = MOTOR_ENABLE_Pin;
         RSV_OUT1_GPIO_Port->BSRR = RSV_OUT1_Pin;

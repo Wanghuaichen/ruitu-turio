@@ -14,7 +14,7 @@ uint8_t battary[8] = {0x01,0x03,0x00,0x12,0x00,0x01,0x24,0x0F};
 uint8_t motorTest[8];
 uint32_t canID = 0x701;
 uint16_t adcValue[100][2];
-MotorPosVel motorP;
+
 extern double_t encoderPosition_ = 0;
 extern int32_t encoderUpdata = 0;
 struct record {const char *precision;double lat,lon;const char *address,*city,*state,*zip,*country; };
@@ -30,87 +30,6 @@ PUTCHAR_PROTOTYPE
   {
   } //等待字符发送完毕
   return ch;
-}
-
-void create_objects()
-{
-  cJSON *root,*fmt,*img,*thm,*fld;char *out;int i;  /* declare a few. */
-  /* Our "days of the week" array: */
-  const char *strings[7]={"Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"};
-  /* Our matrix: */
-  int numbers[3][3]={{0,-1,0},{1,0,0},{0,0,1}};
-  /* Our "gallery" item: */
-  int ids[4]={116,943,234,38793};
-  /* Our array of "records": */
-	struct record fields[2]={
-		{"zip",37.7668,-1.223959e+2,"","SAN FRANCISCO","CA","94107","US"},
-		{"zip",37.371991,-1.22026e+2,"","SUNNYVALE","CA","94085","US"}};
-
-  /* Here we construct some JSON standards, from the JSON site. */
-
-  /* Our "Video" datatype: */
-  root=cJSON_CreateObject();
-  cJSON_AddItemToObject(root, "name", cJSON_CreateString("Jack (\"Bee\") Nimble"));
-  cJSON_AddItemToObject(root, "format", fmt=cJSON_CreateObject());
-  cJSON_AddStringToObject(fmt,"type",   "rect");
-  cJSON_AddNumberToObject(fmt,"width",    1920);
-  cJSON_AddNumberToObject(fmt,"height",   1080);
-  cJSON_AddFalseToObject (fmt,"interlace");
-  cJSON_AddNumberToObject(fmt,"frame rate", 24);
-
-  out=cJSON_Print(root);  
-  cJSON_Delete(root);
-  ethernet_printf(out,0); 
-  free(out);  /* Print to text, Delete the cJSON, print it, release the string. */
-
-  /* Our "days of the week" array: */
-  root=cJSON_CreateStringArray(strings,7);
-
-  out=cJSON_Print(root);  cJSON_Delete(root); ethernet_printf(out,0); free(out);
-
-  /* Our matrix: */
-  root=cJSON_CreateArray();
-  for (i=0;i<3;i++) cJSON_AddItemToArray(root,cJSON_CreateIntArray(numbers[i],3));
-
-/*  cJSON_ReplaceItemInArray(root,1,cJSON_CreateString("Replacement")); */
-
-  out=cJSON_Print(root);  cJSON_Delete(root); ethernet_printf(out,0); free(out);
-
-
-  /* Our "gallery" item: */
-  root=cJSON_CreateObject();
-  cJSON_AddItemToObject(root, "Image", img=cJSON_CreateObject());
-  cJSON_AddNumberToObject(img,"Width",800);
-  cJSON_AddNumberToObject(img,"Height",600);
-  cJSON_AddStringToObject(img,"Title","View from 15th Floor");
-  cJSON_AddItemToObject(img, "Thumbnail", thm=cJSON_CreateObject());
-  cJSON_AddStringToObject(thm, "Url", "http:/*www.example.com/image/481989943");
-  cJSON_AddNumberToObject(thm,"Height",125);
-  cJSON_AddStringToObject(thm,"Width","100");
-  cJSON_AddItemToObject(img,"IDs", cJSON_CreateIntArray(ids,4));
-
-  out=cJSON_Print(root);  cJSON_Delete(root); ethernet_printf(out,0); free(out);
-
-  /* Our array of "records": */
-
-  root=cJSON_CreateArray();
-  for (i=0;i<2;i++)
-  {
-    cJSON_AddItemToArray(root,fld=cJSON_CreateObject());
-    cJSON_AddStringToObject(fld, "precision", fields[i].precision);
-    cJSON_AddNumberToObject(fld, "Latitude", fields[i].lat);
-    cJSON_AddNumberToObject(fld, "Longitude", fields[i].lon);
-    cJSON_AddStringToObject(fld, "Address", fields[i].address);
-    cJSON_AddStringToObject(fld, "City", fields[i].city);
-    cJSON_AddStringToObject(fld, "State", fields[i].state);
-    cJSON_AddStringToObject(fld, "Zip", fields[i].zip);
-    cJSON_AddStringToObject(fld, "Country", fields[i].country);
-  }
-
-/*  cJSON_ReplaceItemInObject(cJSON_GetArrayItem(root,1),"City",cJSON_CreateIntArray(ids,4)); */
-
-  out=cJSON_Print(root);  cJSON_Delete(root); ethernet_printf(out,0); free(out);
-
 }
 
 int main (void)
@@ -150,8 +69,7 @@ int main (void)
 ////  /* Initilaize the LwIP satck */
   socket_buf_init(txsize, rxsize);    /*初始化8个Socket的发送接收缓存大小*/
  // printf("good job!");
- motorP.position = 90000;
- motorP.velocity = 300;
+
 queryRegAddr_ = BATTERY_REG_VOTAGE;
  SetMotor(ENABLE);
  task_init();
@@ -184,21 +102,6 @@ queryRegAddr_ = BATTERY_REG_VOTAGE;
         default: break;
       }
 
-      if (getSn_SR(SOCK_TCPS) == SOCK_ESTABLISHED)
-      {  
-        ethernet_printf("good master",0);
-//        usr=cJSON_CreateObject();   //创建根数据对象  
-//        cJSON_AddStringToObject(usr,"name","fengxin");  //加入键值，加字符串  
-//        cJSON_AddStringToObject(usr,"passwd","123");  
-//        cJSON_AddNumberToObject(usr,"num",1);  //加整数  
-//          
-//        char *out = cJSON_Print(usr);   //将json形式打印成正常字符串形式  
-//        ethernet_printf(out,0);  
-//         
-//        // 释放内存    
-//        cJSON_Delete(usr);    
-//        free(out); 
-      }
 //      get_adc_value(adcValue[step]);
 //      adcValue[step][1] = computer_tempature(adcValue[step][0]);
       if (step >= 20)
@@ -207,8 +110,6 @@ queryRegAddr_ = BATTERY_REG_VOTAGE;
          ti = 0;
       }
     //
-    do_tcp_server();
-   //   do_tcp_client();
 
 
 

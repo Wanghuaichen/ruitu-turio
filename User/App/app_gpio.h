@@ -44,6 +44,26 @@ void control_left_oas_led(uint8_t onoff);
 void control_init(void);
 void control_all_off(void);
 void control_all_on(void);
+
+//设备控制-开启或者关闭激光雷达等等
+void SetFan(uint8_t fan,uint8_t state); //打开或关闭 fan：fan1或者fan2 state：ENABLE/DISABLE
+void SetRadar(uint8_t state);    //打开雷达 or DISABLE默认只有一个雷达
+void SetRoute(uint8_t state);    //打路由器 or DISABL
+void SetIMU(uint8_t state);      //打开IMU or DISABLE
+
+//  //设置LED灯状态，本次只有三个LED灯
+//  void SetTopLed(choice);//常亮on-2、闪烁 blinking-1、关闭off-0 提前define
+//  void SetMidLed(choice);//常亮2、闪烁1、关闭0
+//  void SetRgbLed(color,choice);//常亮2（选择R/G/B?）、闪烁1、关闭0  貌似要两个IO去控
+/*------------------- 传感器信号及控制 -------------------------------*/
+uint8_t GetLeftObstacleSensor(void);     // 1为有障碍 ，0为无障碍
+uint8_t GetRightObstacleSensor(void);    // 1为有障碍 ， 0为无障碍
+void SetLeftObstacleLed(uint8_t state);  // LED_ON/LED_OFF/LED_BLINKING
+void SetRightObstacleLed(uint8_t state); // LED_ON/LED_OFF/LED_BLINKING
+uint8_t GetIRLoactionSensor(void);    // 1为有障碍 ， 0为无障碍
+
+void task_sensors_init(void);
+void task_sensors(void);
 #endif
 
 /*********************************************************************************************************
