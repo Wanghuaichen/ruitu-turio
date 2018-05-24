@@ -68,7 +68,7 @@ typedef union
 #include "ocp_spi.h"
 #include "ocp_adc.h"
 #include "ocp_timer.h"
-
+#include "ocp_flash.h"
 #include "bfm_w5500.h"
 
 #include "app_config.h"

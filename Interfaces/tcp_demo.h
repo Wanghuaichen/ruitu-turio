@@ -70,8 +70,8 @@ typedef struct ROBOcommand{
 	
 	//用于上传状态给服务器，状态类型结构体
 typedef struct ROBOstatus{	
-		char 	          *	 RunStatus;
-		char            *  CurrentTime;
+		char 	          	 RunStatus[10];
+		char              CurrentTime[30];
 	  int      			 		 CurrentPositiont;
 		unsigned short int CurrentSpeed;
 		unsigned short int RunningCount;

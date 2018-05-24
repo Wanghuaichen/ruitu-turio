@@ -45,7 +45,7 @@ void Command_tcp_client(void)
       if(count==1)//连接上第一次发送连接类型给上位机
         //send(SOCK_TCPC,buff,strlen(buff));                     //向Server发送数据ShakeHandInit_TypeDef 类型，ID为多少，Type为RobotCommand
       {
-        sendchar = Trans_to_ServerFormat(sendchar,HelloStatusCommand_to_cJSON( &Command_Hello_TypeStructure));
+//        sendchar = Trans_to_ServerFormat(sendchar,HelloStatusCommand_to_cJSON( &Command_Hello_TypeStructure));
         TCP_Send(sendchar);
       }
 

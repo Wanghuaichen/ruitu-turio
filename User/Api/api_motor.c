@@ -218,14 +218,18 @@ void task_motor_control(void)
       _TaskMotorControl.state = TASK_STATE_SLEEP;
       if ((sRobotStatus_.runStatus == Robot_CMD_Backward) || (sRobotStatus_.runStatus == Robot_CMD_Forward))
         sRobotStatus_.runStatus = Robot_CMD_Jog;  //回到手动模式
-      else if ((strcmp(runP,recMotorStatus_[0]) == 0) && (sRobotStatus_.runStatus == Robot_CMD_Auto))
+      else if ((strcmp(runP,recMotorStatus_[0]) == 0)
+                && (sRobotStatus_.runStatus == Robot_CMD_Auto))
       {
-        if (runP == sMotorParam_.startPosition)
-          runP = sMotorParam_.endPosition;
-        else
-          runP = sMotorParam_.startPosition;
-        _TaskMotorControl.progressBar = 0;
-        _TaskMotorControl.state = TASK_STATE_RUN;
+        if (++sRobotStatus_.RunningCount < (sMotorParam_.runCount * 2))
+        {
+          if (runP == sMotorParam_.startPosition)
+            runP = sMotorParam_.endPosition;
+          else
+            runP = sMotorParam_.startPosition;
+          _TaskMotorControl.progressBar = 0;
+          _TaskMotorControl.state = TASK_STATE_RUN;
+        }
       }
       else
         ;

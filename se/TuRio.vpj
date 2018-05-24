@@ -283,6 +283,10 @@
     </CustomFolders>
     <Files AutoFolders="PackageView">
         <Folder Name="../Interfaces">
+            <F N="../Interfaces/interfaces_bottom.c"/>
+            <F N="../Interfaces/interfaces_bottom.h"/>
+            <F N="../Interfaces/malloc.c"/>
+            <F N="../Interfaces/malloc.h"/>
             <F N="../Interfaces/tcp_demo.c"/>
             <F N="../Interfaces/tcp_demo.h"/>
         </Folder>
@@ -404,6 +408,8 @@
             <F N="../User/Ocp/ocp_adc.h"/>
             <F N="../User/Ocp/ocp_can.c"/>
             <F N="../User/Ocp/ocp_can.h"/>
+            <F N="../User/Ocp/ocp_flash.c"/>
+            <F N="../User/Ocp/ocp_flash.h"/>
             <F N="../User/Ocp/ocp_gpio.c"/>
             <F N="../User/Ocp/ocp_gpio.h"/>
             <F N="../User/Ocp/ocp_spi.c"/>

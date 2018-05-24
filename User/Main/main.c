@@ -101,13 +101,6 @@ queryRegAddr_ = BATTERY_REG_VOTAGE;
         break;
         default: break;
       }
-
-//      get_adc_value(adcValue[step]);
-//      adcValue[step][1] = computer_tempature(adcValue[step][0]);
-      if (step >= 20)
-        step = 10;
-      battery_control(queryRegAddr_);
-         ti = 0;
       }
     //
 

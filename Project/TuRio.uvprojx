@@ -569,6 +569,11 @@
               <FileType>1</FileType>
               <FilePath>..\User\Ocp\ocp_timer.c</FilePath>
             </File>
+            <File>
+              <FileName>ocp_flash.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\User\Ocp\ocp_flash.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

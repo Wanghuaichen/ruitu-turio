@@ -220,18 +220,17 @@ uint8_t robot_rx_date_coversion(ROBOCmd_TypeDef *sRobotCmd)
 void robot_tx_data_conversion(S_ROBOT_STATUS *sStatus)
 {
   ROBOStatus_TypeDef recRobotStatus;
-  set_robot_command(sStatus->runStatus,recRobotStatus.RunStatus);
-  strcpy(recRobotStatus.CurrentTime, "2017-10-13 17:27:30\0");
-  recRobotStatus.CurrentPositiont = motorStatus_[0];
-  recRobotStatus.CurrentSpeed = atoin32(sStatus->CurrentSpeed,0);
-  recRobotStatus.RunningCount = sStatus->RunningCount;
-  recRobotStatus.CurrentTemp = sStatus->CurrentTemp;
-  recRobotStatus.CurrentVoltage = (float)(sStatus->CurrentVoltage / 100);
-  recRobotStatus.CurrentAmp = (float)(sStatus->CurrentAmp/100);
-  recRobotStatus.CurrentDir = sStatus->CurrentDir;
-
-  recRobotStatus.ControlSystemEnergy = (float)(sStatus->ControlSystemEnergy/100);
-  recRobotStatus.DynamicSystemEnergy = recRobotStatus.ControlSystemEnergy;
+  set_robot_command(sStatus->runStatus,recRobotStatus.RunStatus); // 上传状态
+  strcpy(recRobotStatus.CurrentTime, "2017-10-13 17:27:30\0");    // 上传时间
+  recRobotStatus.CurrentPositiont = motorStatus_[0];              // 上传当前位置
+  recRobotStatus.CurrentSpeed = atoin32(sStatus->CurrentSpeed,0); // 上传当前速度
+  recRobotStatus.RunningCount = (sStatus->RunningCount/2);        // 上传巡检次数
+  recRobotStatus.CurrentTemp = sStatus->CurrentTemp;              // 上传当前温度
+  recRobotStatus.CurrentVoltage = (float)(sStatus->CurrentVoltage / 100); // 上传当前电池电压
+  recRobotStatus.CurrentAmp = (float)(sStatus->CurrentAmp/100);           // 上传当前电池电流
+  recRobotStatus.CurrentDir = sStatus->CurrentDir;                        // 上传当前运动向
+  recRobotStatus.ControlSystemEnergy = (float)(sStatus->ControlSystemEnergy/100); // 上传当前电池电量
+  recRobotStatus.DynamicSystemEnergy = recRobotStatus.ControlSystemEnergy;        // 上传当前电池电量
 
 }
 
@@ -271,21 +270,21 @@ void set_robot_command(E_MOTOR_STATE eRobotStatus ,char *buf)
 {
 
   if (eRobotStatus ==  Robot_CMD_Auto)
-    strcpy(buf,"Auto\0");
+    strcpy(buf,"Auto");
   else if (eRobotStatus ==  Robot_CMD_Set)
-    strcpy(buf, "Set\0");
+    strcpy(buf, "Set");
   else if (eRobotStatus ==  Robot_CMD_Jog)
-    strcpy(buf, "Jog\0");
+    strcpy(buf, "Jog");
   else if (eRobotStatus ==  Robot_CMD_Stop)
-    strcpy(buf, "Stop\0");
+    strcpy(buf, "Stop");
   else if (eRobotStatus ==  Robot_CMD_Forward)
-    strcpy(buf, "Forward\0");
+    strcpy(buf, "Forward");
   else if (eRobotStatus ==  Robot_CMD_Backward)
-    strcpy(buf, "Backward\0");
+    strcpy(buf, "Backward");
   else if (eRobotStatus ==  Robot_CMD_Dot)
-    strcpy(buf, "Dot\0");
+    strcpy(buf, "Dot");
   else if (eRobotStatus ==  Robot_CMD_Homing)
-    strcpy(buf, "Homing\0");
+    strcpy(buf, "Homing");
 }
 
 /*********************************************************************************************************
