@@ -50,7 +50,6 @@ void Command_tcp_client(void)
 {	
 	CommandType CmdType;
 	uint16_t len=0;//接收到的数据长度
-	uint16_t len2=0;
 	switch(getSn_SR(SOCK_TCPC))								  				         /*获取socket的状态*/
 	{
 		case SOCK_CLOSED:											        		         /*socket处于关闭状态*/
@@ -78,40 +77,12 @@ void Command_tcp_client(void)
 			len=getSn_RX_RSR(SOCK_TCPC); 								  	         /*定义len为已接收数据的长度*/
 			if(len>10)//接收到数据
 			{
-					//mymemset(cmdSever_FORMAT_Buf,'\0',350);
-					recv(SOCK_TCPC,(uint8_t*)cmdSever_FORMAT_Buf,len); 		//*接收来自Server的数据,把数据存到一个缓存内
-					cmdSever_FORMAT_Buf[len]=0x00;/*添加字符串结束符*/	
-//							printf("the Command content of Sever_FORMAT_Buf is---->%s\r\n",Sever_FORMAT_Buf);
-//				printf("-----------------------------------------------------\r\n");
-					Parse_from_ServerFormat(cmdcJSON_FORMAT_Buf, cmdSever_FORMAT_Buf);//去掉****与#####的作用
-					//mymemset(cmdSever_FORMAT_Buf,'\0',len);
-					len2=strlen(cmdcJSON_FORMAT_Buf);
-					printf("第 %d 次收到命令了\r\n",count3++);
-					//printf("收到%d个数据，接收到的数据内容是---->%s\r\n",len,cmdcJSON_FORMAT_Buf);
-					//mymemset(cmdcJSON_FORMAT_Buf,'\0',len);
-//				printf("已经接收到网络命令了，长度为%d ！\r\n",len);
-//				printf("数据的内容为%s\r\n",cJSON_FORMAT_Buf);
-				  len=0;											                 
-				CmdType=GetCommandFromServer(cmdcJSON_FORMAT_Buf);
-				
-				if(CmdType==NOCOMMAND)
-				{		printf("-----------NO COMMAND------------\r\n");
-						break;
-				}
-				if(CmdType==COMMAND)
-				{	
-					
-						printf("注意，接收到了新的命令%s \r\n",Cmd_From_Server.Command);
-				//接收到了新的命令
-				
-				}
-				if(CmdType==HELLO_ACK)
-				{
-				
-				//接收到了ID及时间参数反馈
-				
-				}			
-	
+        //mymemset(cmdSever_FORMAT_Buf,'\0',350);
+        recv(SOCK_TCPC,(uint8_t*)cmdSever_FORMAT_Buf,len); 		//*接收来自Server的数据,把数据存到一个缓存内
+        cmdSever_FORMAT_Buf[len]=0x00;/*添加字符串结束符*/	
+        Parse_from_ServerFormat(cmdcJSON_FORMAT_Buf, cmdSever_FORMAT_Buf);//去掉****与#####的作用
+        len=0;											                 
+				CmdType=GetCommandFromServer(cmdcJSON_FORMAT_Buf);								
 			}	
 		  break;
 			

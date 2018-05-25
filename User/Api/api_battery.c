@@ -9,14 +9,7 @@
 */
 #include "include.h"
 
- char robotCMD[8][10] = {"Auto",
-"Set",
-"Jog",
-"Stop",
-"Forward",
-"Backward",
-"Dot",
-"Homing"};
+
 #define         CRC_16_POLYNOMIALS  0xa001
 /* CRC 高位字节值表 */
 uint8_t auchCRCH[] = {0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0, 0x80,
@@ -66,9 +59,16 @@ uint8_t auchCRCL[] = {
    0x89, 0x4B, 0x8B, 0x8A, 0x4A, 0x4E, 0x8E, 0x8F, 0x4F, 0x8D, 0x4D, 0x4C,
   0x8C, 0x44, 0x84, 0x85, 0x45, 0x87, 0x47, 0x46, 0x86, 0x82, 0x42, 0x43,
   0x83, 0x41, 0x81, 0x80, 0x40
-        };
+   };
 
-// X^16 +X^15 +X^2+1 ?à????
+
+/**
+*@function uint16_t Check_CRC16(uint8_t *pchMsg, uint8_t wDataLen)
+*@brief    crc校验函数 // X^16 +X^15 +X^2+1 ?à????
+*@param    pchMsg ：需要校验的数据
+*@param    wDataLen ：校验数据的长度
+*@return   校验结果 crc16
+*/
 uint16_t Check_CRC16(uint8_t* pchMsg,uint8_t wDataLen)
 {
     uint8_t i, chChar;
@@ -89,7 +89,13 @@ uint16_t Check_CRC16(uint8_t* pchMsg,uint8_t wDataLen)
 }
 
 
-//校验函数
+/**
+*@function uint16_t crc16(uint8_t *puchMsg, uint16_t usDataLen)
+*@brief    crc校验
+*@param    puchMsg ：校验的数据
+*@param    usDataLen ：校验数据的长度
+*@return   crc16校验结果
+*/
 uint16_t crc16(uint8_t* puchMsg, uint16_t usDataLen)
 {
   uint16_t clc;
@@ -107,7 +113,14 @@ uint16_t crc16(uint8_t* puchMsg, uint16_t usDataLen)
   return (clc);
 
 }
-
+/**
+*@function void battery_tx_processing(uint8_t addr, uint8_t funCode, uint8_t regAddr)
+*@brief    电池发送数据处理：地址（1byte）+功能码（1byte）+地址（2byte）+读取数据长度（2byte）+crc16
+*@param    addr ：电池地址
+*@param    funCode ：功能码
+*@param    regAddr ：寄存器地下
+*@return   无
+*/
 void battery_tx_processing(uint8_t addr,uint8_t funCode, uint8_t regAddr)
 {
   uint16_t crcData = 0;
@@ -124,30 +137,49 @@ void battery_tx_processing(uint8_t addr,uint8_t funCode, uint8_t regAddr)
   Circle_Write_Data(&sUart1TxCircleBuf_,sendData,9);
 
 }
+/**
+*@function void battery_rx_processing(uint8_t *buf, uint16_t len)
+*@brief    电池接收数据处理
+*@param    buf ：接收的数据
+*@param    len ：处理数据的长度
+*@return   无
+*/
 void battery_rx_processing(uint8_t *buf, uint16_t len)
 {
   if ((buf[0] == 0x01) && (buf[1] == 0x03))
   {
-    if (queryRegAddr_ == BATTERY_REG_VOTAGE)
+    if (queryRegAddr_ == BATTERY_REG_VOTAGE) // 读电压
     {
       sBattery_.batteryVoltage = ((buf[3] << 8) & 0xFF00) + (buf[4] & 0xFF);
     }
-    else if (queryRegAddr_ == BATTERY_REG_VOTAGE_PERCENT)
+    else if (queryRegAddr_ == BATTERY_REG_VOTAGE_PERCENT) // 读电量
     {
       sBattery_.batteryPercent = ((buf[3] << 8) & 0xFF00) + (buf[4] & 0xFF);
     }
-    else if (queryRegAddr_ == BATTERY_REG_CURRENT)
+    else if (queryRegAddr_ == BATTERY_REG_CURRENT) // 读电流
     {
       sBattery_.batteryCurrent = ((buf[3] << 8) & 0xFF00) + (buf[4] & 0xFF);
     }
-    batteryStateFlag_ |= BATTERY_FLAG_GET_PARAM;
+    batteryStateFlag_ |= BATTERY_FLAG_GET_PARAM; // 读到数据标志
   }
 }
+/**
+*@function void battery_control(uint8_t regAddr)
+*@brief    电池控制函数
+*@param    regAddr ：对应控制的寄存器地址
+*@return   无
+*/
 void battery_control(uint8_t regAddr)
 {
   batteryStateFlag_ &= ~BATTERY_FLAG_GET_PARAM;
   battery_tx_processing(BATTERY_ADDR,BATTERY_FUN_CODE,regAddr);
 }
+/**
+*@function void task_battery_init(void)
+*@brief    电池处理任务函数初始化
+*@param    void ：空
+*@return   无
+*/
 void task_battery_init(void)
 {
   _TaskBattery.fun = task_battery;
@@ -155,10 +187,15 @@ void task_battery_init(void)
   _TaskBattery.state    = TASK_STATE_RUN;
   sRobotStatus_.runStatus = Robot_CMD_Stop;
 }
+/**
+*@function void task_battery(void)
+*@brief   电池处理任务
+*@return   无
+*/
 void task_battery(void)
 {
   static uint8_t i = 0;
-  _TaskBattery.interval = 1000;
+  _TaskBattery.interval = 1000; // 每秒种处理一次
   _TaskBattery.state    = TASK_STATE_DELAY;
   if (batteryStateFlag_ & BATTERY_FLAG_GET_PARAM)
   {
@@ -179,121 +216,6 @@ void task_battery(void)
   robot_tx_data_conversion(&sRobotStatus_);
 }
 
-
-uint8_t robot_rx_date_coversion(ROBOCmd_TypeDef *sRobotCmd)
-{
-  uint8_t len;
-  // 读取参数
-  sMotorParam_.eComand = get_robot_command(sRobotCmd->Command); // 获取命令
-  if (sRobotStatus_.runStatus == sMotorParam_.eComand) // 相同命令返回
-    return 1;
-  else if (sMotorParam_.eComand == Robot_CMD_Stop) // 其它任何状态都可以切换到stop
-    sRobotStatus_.runStatus = Robot_CMD_Stop;
-  else if (sRobotStatus_.runStatus == Robot_CMD_Stop) // stop状态
-  {
-      if (sMotorParam_.eComand == Robot_CMD_Set) // stop状态可设置
-      {
-        i32toa(sRobotCmd->Speed * MOTOR_COUNTS_VELOCITY, sMotorParam_.speed, &len); // 速度
-        i32toa(sRobotCmd->StartPosition * MOTOR_COUNTS_POSITION, sMotorParam_.startPosition, &len); // 开始位置
-        i32toa(sRobotCmd->EndPosition * MOTOR_COUNTS_POSITION, sMotorParam_.endPosition, &len); // 结束位置
-        i32toa(sRobotCmd->TargetPosition * MOTOR_COUNTS_POSITION, sMotorParam_.targetPosition, &len); // 目标位置
-        sMotorParam_.step = sRobotCmd->Step ;                              // 步长
-        sMotorParam_.eWorkMode = get_robot_run_mode(sRobotCmd->WorkMode);  // 工作模式
-      }
-      else if ((sMotorParam_.eComand == Robot_CMD_Auto)  //stop状态可切换状态
-              ||(sMotorParam_.eComand == Robot_CMD_Jog)
-              ||(sMotorParam_.eComand == Robot_CMD_Dot)
-              ||(sMotorParam_.eComand == Robot_CMD_Homing)
-              )
-      {
-        sRobotStatus_.runStatus = sMotorParam_.eComand;
-      }
-
-  }
-  else if (((sMotorParam_.eComand == Robot_CMD_Forward)   // 手动模式处理
-          || (sMotorParam_.eComand == Robot_CMD_Backward))
-          && (sRobotStatus_.runStatus == Robot_CMD_Jog)
-          )
-  {
-    sRobotStatus_.runStatus = sMotorParam_.eComand;
-  }
-  else
-    return 1;
-
-  // 停止操作
-  _TaskMotorControl.progressBar = 0;
-  _TaskMotorControl.state = TASK_STATE_RUN;
-  return 1;
-}
-void robot_tx_data_conversion(S_ROBOT_STATUS *sStatus)
-{
-  ROBOStatus_TypeDef recRobotStatus;
-  set_robot_command(sStatus->runStatus,recRobotStatus.RunStatus); // 上传状态
-  strcpy( recRobotStatus.CurrentTime ,"2017-10-13 17:27:30\0");    // 上传时间
-  recRobotStatus.CurrentPositiont = motorStatus_[0];              // 上传当前位置
-  recRobotStatus.CurrentSpeed = atoin32(sStatus->CurrentSpeed,0); // 上传当前速度
-  recRobotStatus.RunningCount = (sStatus->RunningCount/2);        // 上传巡检次数
-  recRobotStatus.CurrentTemp = sStatus->CurrentTemp;              // 上传当前温度
-  recRobotStatus.CurrentVoltage = (float)(sStatus->CurrentVoltage / 100); // 上传当前电池电压
-  recRobotStatus.CurrentAmp = (float)(sStatus->CurrentAmp/100);           // 上传当前电池电流
-  recRobotStatus.CurrentDir = sStatus->CurrentDir;                        // 上传当前运动向
-  recRobotStatus.ControlSystemEnergy = (float)(sStatus->ControlSystemEnergy/100); // 上传当前电池电量
-  recRobotStatus.DynamicSystemEnergy = recRobotStatus.ControlSystemEnergy;        // 上传当前电池电量
-  send_robot_status_data(&recRobotStatus);
-}
-
-E_MOTOR_STATE get_robot_command(char *buf)
-{
-  if (strcmp(buf, "Auto") == 0)
-    return Robot_CMD_Auto;
-  else if (strcmp(buf, "Set") == 0)
-    return Robot_CMD_Set;
-  else if (strcmp(buf, "Jog") == 0)
-    return Robot_CMD_Jog;
-  else if (strcmp(buf, "Stop") == 0)
-    return Robot_CMD_Stop;
-  else if (strcmp(buf, "Forward") == 0)
-    return Robot_CMD_Forward;
-  else if (strcmp(buf, "Backward") == 0)
-    return Robot_CMD_Backward;
-  else if (strcmp(buf, "Dot") == 0)
-    return Robot_CMD_Dot;
-  else if (strcmp(buf, "Homing") == 0)
-    return Robot_CMD_Homing;
-  else
-    return Robot_CMD_Error;
-}
-E_WORK_MODE get_robot_run_mode(char *buf)
-{
-  if (strcmp(buf, "RealTime") == 0)
-    return Robot_Work_RealTime;
-  else if (strcmp(buf, "Regular") == 0)
-    return Robot_Work_Regular;
-  else if (strcmp(buf, "Daily") == 0)
-    return Robot_Work_Daily;
-  else
-    return Robot_Work_Error;
-}
-void set_robot_command(E_MOTOR_STATE eRobotStatus ,char *buf)
-{
-
-  if (eRobotStatus ==  Robot_CMD_Auto)
-   strcpy( buf,"Auto");
-  else if (eRobotStatus ==  Robot_CMD_Set)
-    strcpy( buf,"Set");
-  else if (eRobotStatus ==  Robot_CMD_Jog)
-    strcpy( buf,"Jog");
-  else if (eRobotStatus ==  Robot_CMD_Stop)
-    strcpy( buf,"Stop");
-  else if (eRobotStatus ==  Robot_CMD_Forward)
-    strcpy( buf,"Forward");
-  else if (eRobotStatus ==  Robot_CMD_Backward)
-    strcpy( buf,"Backward");
-  else if (eRobotStatus ==  Robot_CMD_Dot)
-    strcpy( buf,"Dot");
-  else if (eRobotStatus ==  Robot_CMD_Homing)
-    strcpy( buf,"Homing");
-}
 
 /*********************************************************************************************************
 **                                        End Of File

@@ -398,15 +398,22 @@ uint8_t GetIRLoactionSensor(void)
   else
     return 0;
 }
-
+/**
+*@function void task_sensors_init(void)
+*@brief    传感器任务初始化
+*@param    void ：空
+*@return   无
+*/
 void task_sensors_init(void)
 {
   _TaskSensors.fun = task_sensors;
   _TaskSensors.state = TASK_STATE_RUN;
-  segmentNum_ = 0;
-  irLocationNum_ = 0;
-  homingDistance_ = 28;
 }
+/**
+*@function void task_sensors(void)
+*@brief    传感器任务
+*@return   无
+*/
 void task_sensors(void)
 {
   #define FILTER_TIMES   2

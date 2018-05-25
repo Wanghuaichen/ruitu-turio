@@ -8,6 +8,11 @@
 **************************************************************************************************
 */
 #include "include.h"
+/**
+*@function void set_DQ_OUTPUTput(void)
+*@brief    管脚输出设置
+*@return   无
+*/
 void set_DQ_OUTPUTput(void)
 {
   GPIO_InitTypeDef GPIO_InitStruct;       //  定义GPIO初始化结构体
@@ -17,6 +22,11 @@ void set_DQ_OUTPUTput(void)
   GPIO_InitStruct.GPIO_Speed = GPIO_Speed_2MHz;
   GPIO_Init(DS18B20_DQ_GPIO_Port, &GPIO_InitStruct);
 }
+/**
+*@function void set_DQ_INPUTput(void)
+*@brief    管脚输入设置
+*@return   无
+*/
 void set_DQ_INPUTput(void)
 {
   GPIO_InitTypeDef GPIO_InitStruct;       //  定义GPIO初始化结构体        */
@@ -25,6 +35,12 @@ void set_DQ_INPUTput(void)
   GPIO_InitStruct.GPIO_Mode = GPIO_Mode_IPU;
   GPIO_Init(DS18B20_DQ_GPIO_Port, &GPIO_InitStruct);
 }
+/**
+*@function uint8_t get_pin_input_data(void)
+*@brief    管脚输入信号读取
+*@param    void ：空
+*@return   1：输入高电平 0：输入低电平
+*/
 uint8_t get_pin_input_data(void)
 {
   if (GPIO_ReadInputDataBit(DS18B20_DQ_GPIO_Port, DS18B20_DQ_Pin) != Bit_RESET)
@@ -32,7 +48,12 @@ uint8_t get_pin_input_data(void)
   else
     return 0;
 }
-//初始化函数
+/**
+*@function unsigned char Init_DS18B20(void)
+*@brief    初始化18B20，需要给480-960us的低电平，@
+*@         总线转为高电平后15-60us，18B20回复一个60-240us的低电平即初始化成功
+*@return   18B20回复的电平
+*/
 unsigned char Init_DS18B20(void)
 {
 
@@ -45,7 +66,7 @@ unsigned char Init_DS18B20(void)
     DQ_OUT_LOW;      //PULL down BUS
     delay_us(500);     //500us delay
     DQ_OUT_HIGH;           //release bus with pullup resistance
-    delay_us(100);         //100us delay
+    delay_us(80);         //100us delay
     DQ_INPUT;
     if(DQ_READ_DATA)
       x = 1;             //no device presence
@@ -53,7 +74,12 @@ unsigned char Init_DS18B20(void)
 
     return(x);
 }
-//配置18B20参数。
+/**
+*@function void DS18b20int(void)
+*@brief    18B20初始化配置 ，主要是配置精度
+*@param    void ：空
+*@return   无
+*/
 void DS18b20int(void)
 {
 
@@ -64,7 +90,11 @@ void DS18b20int(void)
   WriteOneChar(0x12);
   WriteOneChar(0x5f);  //设定温度传感器精度为11位、
 }
-//读一个字节
+/**
+*@function unsigned char ReadOneChar(void)
+*@brief    从18B20读取一个字节的数据
+*@return   读取的数据
+*/
 unsigned char ReadOneChar(void)
 {
   unsigned char i=0;
@@ -91,8 +121,12 @@ unsigned char ReadOneChar(void)
   return(dat);
 }
 
-
-//写一个字节
+/**
+*@function void WriteOneChar(unsigned char dat)
+*@brief    对18B20写入一个字节的数据
+*@param    dat ：写入的数据
+*@return   无
+*/
 void WriteOneChar(unsigned char dat)
 {
   unsigned char i=0;
@@ -114,8 +148,12 @@ void WriteOneChar(unsigned char dat)
 }
 
 
-//读取温度
-//读取温度
+/**
+*@function void ReadTemperature(void)
+*@brief    读取温度@
+*@         需要先启动转换，等待转换完成后读取，寄存器前两个值即是温度
+*@return   无
+*/
 void ReadTemperature(void)
 {
   unsigned char a=0;
@@ -141,17 +179,32 @@ void ReadTemperature(void)
   }
 }
 
-//端口数据线初始化为输出高
+/**
+*@function void ds18b20_port_init(void)
+*@brief    管脚初始化，为高
+*@param    void ：空
+*@return   无
+*/
 void ds18b20_port_init(void)
 {
    DQ_OUT_HIGH;
    DQ_OUTPUT;
 }
-
+/**
+*@function void task_read_18b20_init(void)
+*@brief    温度读取任务初始化
+*@param    void ：空
+*@return   无
+*/
 void task_read_18b20_init(void)
 {
-
+  _TaskRead18B20.fun = task_read_18b20;
 }
+/**
+*@function void task_read_18b20(void)
+*@brief    读取18B20任务
+*@return   无
+*/
 void task_read_18b20(void)
 {
   uint8_t tempH,tempL;
@@ -161,7 +214,7 @@ void task_read_18b20(void)
     Init_DS18B20();
     WriteOneChar(0xCC); // 跳过读序号列号的操作
     WriteOneChar(0x44); // 启动温度转换
-    _TaskRead18B20.interval = 500;
+    _TaskRead18B20.interval = 500;             // 延时等待读取完成
     _TaskRead18B20.state    = TASK_STATE_DELAY;
     _TaskRead18B20.progressBar++;
   }

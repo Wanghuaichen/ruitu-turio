@@ -9,7 +9,13 @@
 */
 #include "include.h"
 #include "w5500_config.h"
-
+/**
+*@function void w5500_config_ip(S_W5500_CONFIG *configData, uint8_t readOrWrite)
+*@brief    读取或配置w5500IP
+*@param    configData ：配置或读取值
+*@param    readOrWrite ：W5500_WRITE_PARAMETER:配置参数 W5500_READ_PARAMETER：读取参数
+*@return   无
+*/
 void w5500_config_ip(S_W5500_CONFIG *configData, uint8_t readOrWrite)
 {
   if (readOrWrite == W5500_WRITE_PARAMETER)
@@ -17,7 +23,13 @@ void w5500_config_ip(S_W5500_CONFIG *configData, uint8_t readOrWrite)
   else
     getSIPR(configData->localIP);
 }
-
+/**
+*@function void w5500_config_gateway(S_W5500_CONFIG *configData, uint8_t readOrWrite)
+*@brief    读或者写网关
+*@param    configData ：配置或者读取值
+*@param    readOrWrite ：W5500_WRITE_PARAMETER：配置数据。W5500_READ_PARAMETER：读取参数
+*@return   无
+*/
 void w5500_config_gateway(S_W5500_CONFIG *configData, uint8_t readOrWrite)
 {
   if (readOrWrite == W5500_WRITE_PARAMETER)
@@ -25,7 +37,13 @@ void w5500_config_gateway(S_W5500_CONFIG *configData, uint8_t readOrWrite)
   else
     getGAR(configData->gateWay);
 }
-
+/**
+*@function void w5500_config_subnetMask(S_W5500_CONFIG *configData, uint8_t readOrWrite)
+*@brief    w5500配置子网掩码
+*@param    configData ：配置或读取值
+*@param    readOrWrite ：W5500_WRITE_PARAMETER：配置数据。W5500_READ_PARAMETER：读取参数
+*@return   无
+*/
 void w5500_config_subnetMask(S_W5500_CONFIG *configData, uint8_t readOrWrite)
 {
   if (readOrWrite == W5500_WRITE_PARAMETER)
@@ -33,6 +51,13 @@ void w5500_config_subnetMask(S_W5500_CONFIG *configData, uint8_t readOrWrite)
   else
     getSUBR(configData->subnetMask);
 }
+/**
+*@function void w5500_config_macAddress(S_W5500_CONFIG *configData, uint8_t readOrWrite)
+*@brief    w5500配置或者读取mac地址
+*@param    configData ：配置或读取值
+*@param    readOrWrite ：W5500_WRITE_PARAMETER：配置数据。W5500_READ_PARAMETER：读取参数
+*@return   无
+*/
 void w5500_config_macAddress(S_W5500_CONFIG *configData, uint8_t readOrWrite)
 {
   if (readOrWrite == W5500_WRITE_PARAMETER)
@@ -40,15 +65,32 @@ void w5500_config_macAddress(S_W5500_CONFIG *configData, uint8_t readOrWrite)
   else
     getSHAR(configData->macAddress);
 }
-
+/**
+*@function void w5500_start_up(void)
+*@brief    启动w5500
+*@param    void ：空
+*@return   无
+*/
 void w5500_start_up(void)
 {
   W5500_RESET_HIGH;
 }
+/**
+*@function void w5500_turn_off(void)
+*@brief    关闭w5500
+*@param    void ：空
+*@return   无
+*/
 void w5500_turn_off(void)
 {
   W5500_RESET_LOW;
 }
+/**
+*@function void w5500_restart(void)
+*@brief    w5500重启 ，需要延时时间过长，可放在开始处
+*@param    void ：无
+*@return   无
+*/
 void w5500_restart(void)
 {
   W5500_RESET_LOW;
@@ -57,59 +99,6 @@ void w5500_restart(void)
   delay_us( 16000);
 }
 
-///**
-//*@brief   配置W5500的IP地址
-//*@param   无
-//*@return  无
-//*/
-//void set_w5500_ip(void)
-//{
-//  uint8_t local_ip[4],subnet[4],gateway[4];
-//  if(SPIx==1)
-//  {
-//   /*复制定义的配置信息到配置结构体*/
-//    memcpy(ConfigMsg.mac, Param.mac1, 6);
-//    memcpy(ConfigMsg.lip,Param_now.local_ip1,4);
-//    memcpy(ConfigMsg.sub,Param_now.subnet1,4);
-//    memcpy(ConfigMsg.gw,Param_now.gateway1,4);
-//    memcpy(ConfigMsg.dns,Param_now.dns_server1,4);
-//  }
-//  if(SPIx==2)
-//  {
-//   /*复制定义的配置信息到配置结构体*/
-//    memcpy(ConfigMsg.mac, Param_now.mac2, 6);
-//    memcpy(ConfigMsg.lip,Param_now.local_ip2,4);
-//    memcpy(ConfigMsg.sub,Param_now.subnet2,4);
-//    memcpy(ConfigMsg.gw,Param_now.gateway2,4);
-//    memcpy(ConfigMsg.dns,Param_now.dns_server2,4);
-//  }
-
-//  /*以下配置信息，根据需要选用*/
-//  ConfigMsg.sw_ver[0]=FW_VER_HIGH;
-//  ConfigMsg.sw_ver[1]=FW_VER_LOW;
-
-//  /*将IP配置信息写入W5500相应寄存器*/
-//  setSUBR(ConfigMsg.sub);
-//  setGAR(ConfigMsg.gw);
-//  setSIPR(ConfigMsg.lip);
-//  getSIPR (local_ip);
-////    printf(" W5500 IP地址   : %d.%d.%d.%d\r\n", local_ip[0],local_ip[1],local_ip[2],local_ip[3]);
-//  getSUBR(subnet);
-////  printf(" W5500 子网掩码 : %d.%d.%d.%d\r\n", subnet[0],subnet[1],subnet[2],subnet[3]);
-//  getGAR(gateway);
-////  printf(" W5500 网关     : %d.%d.%d.%d\r\n", gateway[0],gateway[1],gateway[2],gateway[3]);
-//}
-
-/**
-*@brief   配置W5500的MAC地址
-*@param   无
-*@return  无
-*/
-void set_w5500_mac(S_W5500_CONFIG *configData)
-{
-
-  setSHAR(configData->macAddress); /**/
-}
 
 /**
 *@brief   写入一个8位数据到W5500
@@ -196,6 +185,14 @@ uint16_t w5500_read_buf(uint32_t addrbsb, uint8_t* buf,uint16_t len)
   W5500_CS_HIGH;
   return len;
 }
+
+
+
+
+/*********************************************************************************************************
+**                                        End Of File
+*********************************************************************************************************/
+
 
 
 

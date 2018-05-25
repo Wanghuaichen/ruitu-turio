@@ -14,22 +14,6 @@
 typedef  void (*pFunction)(void);
 
 
-/*¶¨ÒåSPI1×÷ÎªW5500µÄÓ²¼ş½Ó¿Ú*/
-#define WIZ_SCS                 GPIO_Pin_4                /*¶¨ÒåW5500µÄÆ¬Ñ¡¹Ü½Å*/
-#define WIZ_SCLK                GPIO_Pin_5                /*¶¨ÒåW5500µÄÊ±ÖÓ¹Ü½Å*/
-#define WIZ_MISO                GPIO_Pin_6                /*¶¨ÒåW5500µÄMISO¹Ü½Å*/
-#define WIZ_MOSI                GPIO_Pin_7                /*¶¨ÒåW5500µÄMOSI¹Ü½Å*/
-#define WIZ_RESET               GPIO_Pin_5                /*¶¨ÒåW5500µÄRESET¹Ü½Å*/
-#define WIZ_INT                 GPIO_Pin_4                /*¶¨ÒåW5500µÄINT¹Ü½Å*/
-
-/*¶¨ÒåSPI2×÷ÎªW5500µÄÓ²¼ş½Ó¿Ú*/
-#define WIZ_SCS2                GPIO_Pin_12               /*¶¨ÒåW5500µÄÆ¬Ñ¡¹Ü½Å*/
-#define WIZ_SCLK2               GPIO_Pin_13               /*¶¨ÒåW5500µÄÊ±ÖÓ¹Ü½Å*/
-#define WIZ_MISO2               GPIO_Pin_14               /*¶¨ÒåW5500µÄMISO¹Ü½Å*/
-#define WIZ_MOSI2               GPIO_Pin_15               /*¶¨ÒåW5500µÄMOSI¹Ü½Å*/
-#define WIZ_RESET2              GPIO_Pin_7                /*¶¨ÒåW5500µÄRESET¹Ü½Å*/
-#define WIZ_INT2                GPIO_Pin_6                /*¶¨ÒåW5500µÄINT¹Ü½Å*/
-
 #define FW_VER_HIGH             1
 #define FW_VER_LOW              0
 #define ON                      1
@@ -77,6 +61,7 @@ uint16_t w5500_read_buf(uint32_t addrbsb, uint8_t* buf,uint16_t len); /*´ÓW5500¶
 
 /*--------------- ºê¶¨Òå --------------*/
 #define W5500_WRITE_PARAMETER     1  // Ğ´²ÎÊıºê¶¨Òå£¬ÆäËüÖµ¶¼ÈÏÎªÊÇ¶Á
+#define W5500_READ_PARAMETER      0  // Ğ´²ÎÊıºê¶¨Òå£¬ÆäËüÖµ¶¼ÈÏÎªÊÇ¶Á
 
 // ¹Ü½ÅÅäÖÃ
 #define W5500_CS_HIGH          GPIO_SetBits( W5500_NSS_GPIO_Port,W5500_NSS_Pin);

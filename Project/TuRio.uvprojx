@@ -590,11 +590,6 @@
           <GroupName>User/Api</GroupName>
           <Files>
             <File>
-              <FileName>api_dataPro.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\User\Api\api_dataPro.c</FilePath>
-            </File>
-            <File>
               <FileName>api_motor.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\User\Api\api_motor.c</FilePath>

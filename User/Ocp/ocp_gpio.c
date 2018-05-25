@@ -133,6 +133,12 @@ void gpio_NIVC_config(void)
 
   NVIC_EnableIRQ(EXTI4_IRQn);
 }
+/**
+*@function void gpio_config_init(void)
+*@brief    gpio配置初始化，包括时钟、管脚中断等
+*@param    void ：空
+*@return   无
+*/
 void gpio_config_init(void)
 {
   //*-----------使能相关模块时钟 -----------------------------------------*/

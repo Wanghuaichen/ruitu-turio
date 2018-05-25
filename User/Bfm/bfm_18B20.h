@@ -11,11 +11,11 @@
 #define _bfm_18B20.h_H_
 #include "include.h"
 /*--------------- 宏定义 --------------*/
-#define DQ_OUTPUT     set_dq_output()
-#define DQ_INPUT      set_dq_input()
-#define DQ_OUT_HIGH   GPIO_SetBits(DS18B20_DQ_GPIO_Port, DS18B20_DQ_Pin);
-#define DQ_OUT_LOW    GPIO_ResetBits(DS18B20_DQ_GPIO_Port, DS18B20_DQ_Pin);
-#define DQ_READ_DATA  get_pin_input_data();
+#define DQ_OUTPUT     set_dq_output()  // 管脚输出
+#define DQ_INPUT      set_dq_input()   // 管脚输入
+#define DQ_OUT_HIGH   GPIO_SetBits(DS18B20_DQ_GPIO_Port, DS18B20_DQ_Pin); // 输出高电平
+#define DQ_OUT_LOW    GPIO_ResetBits(DS18B20_DQ_GPIO_Port, DS18B20_DQ_Pin); // 输出低电平
+#define DQ_READ_DATA  get_pin_input_data(); // 获取引脚高低电平状态
 /*--------------- 变量定义 --------------*/
 
 /*--------------- 函数定义 --------------*/

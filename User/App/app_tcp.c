@@ -9,10 +9,10 @@
 */
 #include "include.h"
 
-uint8_t buff[500];
-char erhBuff[500];
-char testcmd[] = "Auto";
-char testtime[] = "2017-10-13 17:27:30";
+//  uint8_t buff[500];
+//  char erhBuff[500];
+//  char testcmd[] = "Auto";
+//  char testtime[] = "2017-10-13 17:27:30";
 //uint16_t remote_port =  502;
 //uint8_t remote_ip[4] = {192,168,1,103};
 ///**************************************************************************
@@ -142,11 +142,22 @@ char testtime[] = "2017-10-13 17:27:30";
 
 //  }
 //}
+/**
+*@function void task_tcp_init(void)
+*@brief    tcp任务初始化函数
+*@param    void ：空
+*@return   无
+*/
 void task_tcp_init(void)
 {
   _TaskTcp.fun = task_tcp;
   _TaskTcp.state = TASK_STATE_RUN;
 }
+/**
+*@function void task_tcp(void)
+*@brief    tcp任务函数
+*@return   无
+*/
 void task_tcp(void)
 {
   uint8_t bar = TASK_BAR_CMD;
@@ -161,3 +172,156 @@ void task_tcp(void)
     _TaskTcp.progressBar--;
   }
 }
+/**
+*@function uint8_t robot_rx_date_coversion(ROBOCmd_TypeDef *sRobotCmd)
+*@brief    机器人接收数据转换，将网上发出数据转换成指令执行
+*@param    sRobotCmd ：上位机指令数据结构体
+*@return   1：成功 0：失败
+*/
+uint8_t robot_rx_date_coversion(ROBOCmd_TypeDef *sRobotCmd)
+{
+  uint8_t len;
+  // 读取参数
+  sMotorParam_.eComand = get_robot_command(sRobotCmd->Command); // 获取命令
+  if (sRobotStatus_.runStatus == sMotorParam_.eComand) // 相同命令返回
+    return 1;
+  else if (sMotorParam_.eComand == Robot_CMD_Stop) // 其它任何状态都可以切换到stop
+    sRobotStatus_.runStatus = Robot_CMD_Stop;
+  else if (sRobotStatus_.runStatus == Robot_CMD_Stop) // stop状态
+  {
+      if (sMotorParam_.eComand == Robot_CMD_Set) // stop状态可设置
+      {
+        i32toa(sRobotCmd->Speed * MOTOR_COUNTS_VELOCITY, sMotorParam_.speed, &len); // 速度
+        i32toa(sRobotCmd->StartPosition * MOTOR_COUNTS_POSITION, sMotorParam_.startPosition, &len); // 开始位置
+        i32toa(sRobotCmd->EndPosition * MOTOR_COUNTS_POSITION, sMotorParam_.endPosition, &len); // 结束位置
+        i32toa(sRobotCmd->TargetPosition * MOTOR_COUNTS_POSITION, sMotorParam_.targetPosition, &len); // 目标位置
+        sMotorParam_.step = sRobotCmd->Step ;                              // 步长
+        sMotorParam_.eWorkMode = get_robot_run_mode(sRobotCmd->WorkMode);  // 工作模式
+      }
+      else if ((sMotorParam_.eComand == Robot_CMD_Auto)  //stop状态可切换状态
+              ||(sMotorParam_.eComand == Robot_CMD_Jog)
+              ||(sMotorParam_.eComand == Robot_CMD_Dot)
+              ||(sMotorParam_.eComand == Robot_CMD_Homing)
+              )
+      {
+        sRobotStatus_.runStatus = sMotorParam_.eComand;
+      }
+
+  }
+  else if (((sMotorParam_.eComand == Robot_CMD_Forward)   // 手动模式处理
+          || (sMotorParam_.eComand == Robot_CMD_Backward))
+          && (sRobotStatus_.runStatus == Robot_CMD_Jog)
+          )
+  {
+    sRobotStatus_.runStatus = sMotorParam_.eComand;
+  }
+  else
+    return 1;
+
+  // 停止操作
+  _TaskMotorControl.progressBar = 0;
+  _TaskMotorControl.state = TASK_STATE_RUN;
+  return 1;
+}
+/**
+*@function void robot_tx_data_conversion(S_ROBOT_STATUS *sStatus)
+*@brief    机器人发送数据处理
+*@param    sStatus ：需要发送的数据
+*@return   无
+*/
+void robot_tx_data_conversion(S_ROBOT_STATUS *sStatus)
+{
+  ROBOStatus_TypeDef recRobotStatus;
+  set_robot_command(sStatus->runStatus,recRobotStatus.RunStatus); // 上传状态
+  strcpy( recRobotStatus.CurrentTime ,"2017-10-13 17:27:30\0");    // 上传时间
+  recRobotStatus.CurrentPositiont = motorStatus_[0];              // 上传当前位置
+  recRobotStatus.CurrentSpeed = atoin32(sStatus->CurrentSpeed,0); // 上传当前速度
+  recRobotStatus.RunningCount = (sStatus->RunningCount/2);        // 上传巡检次数
+  recRobotStatus.CurrentTemp = sStatus->CurrentTemp;              // 上传当前温度
+  recRobotStatus.CurrentVoltage = (float)(sStatus->CurrentVoltage / 100); // 上传当前电池电压
+  recRobotStatus.CurrentAmp = (float)(sStatus->CurrentAmp/100);           // 上传当前电池电流
+  recRobotStatus.CurrentDir = sStatus->CurrentDir;                        // 上传当前运动向
+  recRobotStatus.ControlSystemEnergy = (float)(sStatus->ControlSystemEnergy/100); // 上传当前电池电量
+  recRobotStatus.DynamicSystemEnergy = recRobotStatus.ControlSystemEnergy;        // 上传当前电池电量
+  send_robot_status_data(&recRobotStatus);
+}
+/**
+*@function E_MOTOR_STATE get_robot_command(char *buf)
+*@brief    获取指令状态，将字符串转为枚举
+*@param    buf ：指令字符串
+*@return   枚举结果
+*/
+E_MOTOR_STATE get_robot_command(char *buf)
+{
+  if (strcmp(buf, "Auto") == 0)
+    return Robot_CMD_Auto;
+  else if (strcmp(buf, "Set") == 0)
+    return Robot_CMD_Set;
+  else if (strcmp(buf, "Jog") == 0)
+    return Robot_CMD_Jog;
+  else if (strcmp(buf, "Stop") == 0)
+    return Robot_CMD_Stop;
+  else if (strcmp(buf, "Forward") == 0)
+    return Robot_CMD_Forward;
+  else if (strcmp(buf, "Backward") == 0)
+    return Robot_CMD_Backward;
+  else if (strcmp(buf, "Dot") == 0)
+    return Robot_CMD_Dot;
+  else if (strcmp(buf, "Homing") == 0)
+    return Robot_CMD_Homing;
+  else
+    return Robot_CMD_Error;
+}
+/**
+*@function E_WORK_MODE get_robot_run_mode(char *buf)
+*@brief    运行模式字符串转枚举值
+*@param    buf ：需要转换的字符串
+*@return   枚举结果
+*/
+E_WORK_MODE get_robot_run_mode(char *buf)
+{
+  if (strcmp(buf, "RealTime") == 0)
+    return Robot_Work_RealTime;
+  else if (strcmp(buf, "Regular") == 0)
+    return Robot_Work_Regular;
+  else if (strcmp(buf, "Daily") == 0)
+    return Robot_Work_Daily;
+  else
+    return Robot_Work_Error;
+}
+/**
+*@function void set_robot_command(E_MOTOR_STATE eRobotStatus, char *buf)
+*@brief    将指令从枚举类型转换成字符串
+*@param    eRobotStatus ：枚举类型
+*@param    buf ：字符串地址
+*@return   无
+*/
+void set_robot_command(E_MOTOR_STATE eRobotStatus ,char *buf)
+{
+
+  if (eRobotStatus ==  Robot_CMD_Auto)
+   strcpy( buf,"Auto");
+  else if (eRobotStatus ==  Robot_CMD_Set)
+    strcpy( buf,"Set");
+  else if (eRobotStatus ==  Robot_CMD_Jog)
+    strcpy( buf,"Jog");
+  else if (eRobotStatus ==  Robot_CMD_Stop)
+    strcpy( buf,"Stop");
+  else if (eRobotStatus ==  Robot_CMD_Forward)
+    strcpy( buf,"Forward");
+  else if (eRobotStatus ==  Robot_CMD_Backward)
+    strcpy( buf,"Backward");
+  else if (eRobotStatus ==  Robot_CMD_Dot)
+    strcpy( buf,"Dot");
+  else if (eRobotStatus ==  Robot_CMD_Homing)
+    strcpy( buf,"Homing");
+}
+
+
+/*********************************************************************************************************
+**                                        End Of File
+*********************************************************************************************************/
+
+
+
+

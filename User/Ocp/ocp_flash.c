@@ -12,7 +12,13 @@
 #define BYTE1(dwTemp)       (*((char *)(&dwTemp) + 1))
 #define BYTE2(dwTemp)       (*((char *)(&dwTemp) + 2))
 #define BYTE3(dwTemp)       (*((char *)(&dwTemp) + 3))
-
+/**
+*@function uint8_t Flash_Read(unsigned char *addr, uint16_t len)
+*@brief    读flash数据
+*@param    addr ：读取数据的地址
+*@param    len ：读取数据的长度
+*@return   1：成功
+*/
 uint8_t Flash_Read(unsigned char *addr, uint16_t len) //addr需要写入结构体的地址，len结构体长度
 {
   uint16_t i;
@@ -34,7 +40,13 @@ uint8_t Flash_Read(unsigned char *addr, uint16_t len) //addr需要写入结构体的地址
   }
   return 1;
 }
-
+/**
+*@function uint8_t Flash_Write(unsigned char *addr, uint16_t len)
+*@brief    flash写操作
+*@param    addr ：写入地址
+*@param    len ：写入数据长度
+*@return   无
+*/
 uint8_t Flash_Write(unsigned char *addr, uint16_t len)
 {
   uint16_t  FlashStatus;

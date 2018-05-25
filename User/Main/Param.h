@@ -17,6 +17,7 @@
 
 /********* єЇКэ¶ЁТе *************/
 
+void param_default_set(void);
 #endif
 
 
