@@ -341,7 +341,7 @@ void TIM2_IRQHandler(void)
       if ((0 - irLocationNum_) > homingDistance_)
       {
         //MOTOR_ENABLE_GPIO_Port->BRR = MOTOR_ENABLE_Pin;
-        RSV_OUT1_GPIO_Port->BSRR = RSV_OUT1_Pin;
+        MOTOR_HOMING_GPIO_Port->BSRR = MOTOR_HOMING_Pin;
       }
     }
   }

@@ -20,9 +20,9 @@ void control_left_oas_led(uint8_t onoff)
   if (onoff == OUT_CONTROL_BLINKING)
     ledBlinkingFlag_ |= LED_OAS_LEFT_BLINKING;
   else if (onoff == OUT_CONTROL_ON)
-    GPIO_SetBits(LED_OAS_LEFT_GPIO_Port, LED_OAS_LEFT_Pin);
+    GPIO_SetBits(LED_OAS_GPIO_Port, LED_OAS_Pin);
   else
-    GPIO_ResetBits(LED_OAS_LEFT_GPIO_Port, LED_OAS_LEFT_Pin);
+    GPIO_ResetBits(LED_OAS_GPIO_Port, LED_OAS_Pin);
 }
 /**
 *@function void control_right_oas_led(uint8_t onoff)
@@ -36,9 +36,9 @@ void control_right_oas_led(uint8_t onoff)
   if (onoff == OUT_CONTROL_BLINKING)
     ledBlinkingFlag_ |= LED_OAS_RIGHT_BLINKING;
   else if (onoff == OUT_CONTROL_ON)
-    GPIO_SetBits(LED_OAS_RIGHT_GPIO_Port, LED_OAS_RIGHT_Pin);
+    GPIO_SetBits(LED_OAS_GPIO_Port, LED_OAS_Pin);
   else
-    GPIO_ResetBits(LED_OAS_RIGHT_GPIO_Port, LED_OAS_RIGHT_Pin);
+    GPIO_ResetBits(LED_OAS_GPIO_Port, LED_OAS_Pin);
 }
 /**
 *@function void control_reserved_out3(uint8_t onoff)
@@ -224,9 +224,7 @@ void control_ethernet_led(uint8_t onoff)
 void control_blinking(void)
 {
   if (ledBlinkingFlag_ & LED_OAS_LEFT_BLINKING)
-    gpio_toggle_pin(LED_OAS_LEFT_GPIO_Port, LED_OAS_LEFT_Pin);
-  if (ledBlinkingFlag_ & LED_OAS_RIGHT_BLINKING)
-    gpio_toggle_pin(LED_OAS_RIGHT_GPIO_Port, LED_OAS_RIGHT_Pin);
+    gpio_toggle_pin(LED_OAS_GPIO_Port, LED_OAS_Pin);
   if (ledBlinkingFlag_ & LED_RUN_BLINKING)
     gpio_toggle_pin(LED_RUN_GPIO_Port, LED_RUN_Pin);
   if (ledBlinkingFlag_ & LED_BATTERY_BLINKING)

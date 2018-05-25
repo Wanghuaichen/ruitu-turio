@@ -9,7 +9,14 @@
 */
 #include "include.h"
 
-
+ char robotCMD[8][10] = {"Auto",
+"Set",
+"Jog",
+"Stop",
+"Forward",
+"Backward",
+"Dot",
+"Homing"};
 #define         CRC_16_POLYNOMIALS  0xa001
 /* CRC 高位字节值表 */
 uint8_t auchCRCH[] = {0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0, 0x80,
@@ -146,6 +153,7 @@ void task_battery_init(void)
   _TaskBattery.fun = task_battery;
   batteryStateFlag_ |= BATTERY_FLAG_GET_PARAM;
   _TaskBattery.state    = TASK_STATE_RUN;
+  sRobotStatus_.runStatus = Robot_CMD_Stop;
 }
 void task_battery(void)
 {
@@ -221,7 +229,7 @@ void robot_tx_data_conversion(S_ROBOT_STATUS *sStatus)
 {
   ROBOStatus_TypeDef recRobotStatus;
   set_robot_command(sStatus->runStatus,recRobotStatus.RunStatus); // 上传状态
-  strcpy(recRobotStatus.CurrentTime, "2017-10-13 17:27:30\0");    // 上传时间
+  strcpy( recRobotStatus.CurrentTime ,"2017-10-13 17:27:30\0");    // 上传时间
   recRobotStatus.CurrentPositiont = motorStatus_[0];              // 上传当前位置
   recRobotStatus.CurrentSpeed = atoin32(sStatus->CurrentSpeed,0); // 上传当前速度
   recRobotStatus.RunningCount = (sStatus->RunningCount/2);        // 上传巡检次数
@@ -231,7 +239,7 @@ void robot_tx_data_conversion(S_ROBOT_STATUS *sStatus)
   recRobotStatus.CurrentDir = sStatus->CurrentDir;                        // 上传当前运动向
   recRobotStatus.ControlSystemEnergy = (float)(sStatus->ControlSystemEnergy/100); // 上传当前电池电量
   recRobotStatus.DynamicSystemEnergy = recRobotStatus.ControlSystemEnergy;        // 上传当前电池电量
-
+  send_robot_status_data(&recRobotStatus);
 }
 
 E_MOTOR_STATE get_robot_command(char *buf)
@@ -270,21 +278,21 @@ void set_robot_command(E_MOTOR_STATE eRobotStatus ,char *buf)
 {
 
   if (eRobotStatus ==  Robot_CMD_Auto)
-    strcpy(buf,"Auto");
+   strcpy( buf,"Auto");
   else if (eRobotStatus ==  Robot_CMD_Set)
-    strcpy(buf, "Set");
+    strcpy( buf,"Set");
   else if (eRobotStatus ==  Robot_CMD_Jog)
-    strcpy(buf, "Jog");
+    strcpy( buf,"Jog");
   else if (eRobotStatus ==  Robot_CMD_Stop)
-    strcpy(buf, "Stop");
+    strcpy( buf,"Stop");
   else if (eRobotStatus ==  Robot_CMD_Forward)
-    strcpy(buf, "Forward");
+    strcpy( buf,"Forward");
   else if (eRobotStatus ==  Robot_CMD_Backward)
-    strcpy(buf, "Backward");
+    strcpy( buf,"Backward");
   else if (eRobotStatus ==  Robot_CMD_Dot)
-    strcpy(buf, "Dot");
+    strcpy( buf,"Dot");
   else if (eRobotStatus ==  Robot_CMD_Homing)
-    strcpy(buf, "Homing");
+    strcpy( buf,"Homing");
 }
 
 /*********************************************************************************************************

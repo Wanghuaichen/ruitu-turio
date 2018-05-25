@@ -17,14 +17,14 @@ void gpio_paramter_config(void)
 
   //*Configure GPIO pin Output Level */
   GPIO_ResetBits(GPIOC, LED_SYS_Pin|W5500_RSTN_Pin|LED_RUN_Pin
-                          |POWER_IMU_Pin|MOTOR_ENABLE_Pin|LED_OAS_RIGHT_Pin|POWER_ROUTE_Pin
+                          |POWER_IMU_Pin|MOTOR_ENABLE_Pin|POWER_ROUTE_Pin
                           |POWER_FAN1_Pin|POWER_FAN2_Pin);
 
   //*Configure GPIO pin Output Level */
   GPIO_ResetBits(GPIOA, W5500_NSS_Pin|RS485_CON_Pin|POWER_LIDAR_Pin);
 
   //*Configure GPIO pin Output Level */
-  GPIO_ResetBits(GPIOB, LED_OAS_LEFT_Pin|RSV_OUT3_Pin|RSV_OUT2_Pin|RSV_OUT1_Pin
+  GPIO_ResetBits(GPIOB, LED_OAS_Pin|RSV_OUT3_Pin|RSV_OUT2_Pin|RSV_OUT1_Pin
                           |LED_ETHERNET_Pin|RSV_IN3_Pin);
 
   //*Configure GPIO pin Output Level */
@@ -35,7 +35,7 @@ void gpio_paramter_config(void)
                            PCPin PCPin PCPin PCPin
                            PCPin PCPin */
   GPIO_InitStruct.GPIO_Pin = LED_SYS_Pin|W5500_RSTN_Pin|LED_RUN_Pin
-                          |POWER_IMU_Pin|MOTOR_ENABLE_Pin|LED_OAS_RIGHT_Pin|POWER_ROUTE_Pin
+                          |POWER_IMU_Pin|MOTOR_ENABLE_Pin|POWER_ROUTE_Pin
                           |POWER_FAN1_Pin|POWER_FAN2_Pin;
   GPIO_InitStruct.GPIO_Mode = GPIO_Mode_Out_PP;
   GPIO_InitStruct.GPIO_Speed = GPIO_Speed_2MHz;
@@ -50,7 +50,7 @@ void gpio_paramter_config(void)
   /**
     Configure GPIO pins : PAPin PAPin PAPin PAPin
    */
-  GPIO_InitStruct.GPIO_Pin = ENCODER_Z_Pin|ENCODER_B_Pin|ENCODER_A_Pin|IR_LOCATION_Pin;
+  GPIO_InitStruct.GPIO_Pin = IR_LOCATION_Pin;
   GPIO_InitStruct.GPIO_Mode = GPIO_Mode_IPU;
   GPIO_Init(GPIOA, &GPIO_InitStruct);
 
@@ -64,7 +64,7 @@ void gpio_paramter_config(void)
   /**
     Configure GPIO pins : PBPin PBPin PBPin PBPin
                            PBPin PBPin */
-  GPIO_InitStruct.GPIO_Pin = LED_OAS_LEFT_Pin|RSV_OUT3_Pin|RSV_OUT2_Pin|RSV_OUT1_Pin
+  GPIO_InitStruct.GPIO_Pin = LED_OAS_Pin|RSV_OUT3_Pin|RSV_OUT2_Pin|RSV_OUT1_Pin
                           |LED_ETHERNET_Pin|RSV_IN3_Pin;
   GPIO_InitStruct.GPIO_Mode = GPIO_Mode_Out_PP;
   GPIO_InitStruct.GPIO_Speed = GPIO_Speed_2MHz;
@@ -79,7 +79,7 @@ void gpio_paramter_config(void)
 
   /**
     Configure GPIO pins : PBPin PBPin PBPin PBPin */
-  GPIO_InitStruct.GPIO_Pin = RSV_IN1_Pin|RSV_IN2_Pin|RSV_IN3_Pin|OAS_RIGHT_Pin|OAS_LEFT_Pin;
+  GPIO_InitStruct.GPIO_Pin = RSV_IN1_Pin|RSV_IN2_Pin|RSV_IN3_Pin|OAS_RIGHT_Pin|OAS_LEFT_Pin|KEY2_IN_Pin|KEY1_IN_Pin;
   GPIO_InitStruct.GPIO_Mode = GPIO_Mode_IPU;
   GPIO_Init(GPIOB, &GPIO_InitStruct);
 }
