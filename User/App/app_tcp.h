@@ -75,14 +75,19 @@ typedef struct
 
 typedef struct
 {
-  E_MOTOR_STATE eComand; // 命令
-  char          speed[6];   // 速度
-  uint16_t      runCount; // 运行次数
-  char          startPosition[11]; // 开始位置
-  char          endPosition[11]; // 结束位置
-  char          targetPosition[11]; // 目标位置
-  E_WORK_MODE   eWorkMode;    // 工作模式 realtime
-  uint16_t      step;           // 手动运动步长
+  E_MOTOR_STATE eComand;             // 命令
+  char          speed[6];            // 速度
+  uint16_t      runCount;            // 运行次数
+  char          startPosition[11];   // 开始位置
+  char          endPosition[11];     // 结束位置
+  char          targetPosition[11];  // 目标位置
+  char          homeOffset[11];      // 回零后偏移距离
+  char          homeFastSpeed[11];    // 回零最快速度
+  char          homeSlowSpeed[11];    // 回零最慢速度
+  char          PositionAccelerated[11]; // 位置模式加速度
+  char          PositionDecelerated[11]; // 位置模式减速度
+  E_WORK_MODE   eWorkMode;           // 工作模式 realtime
+  uint16_t      step;                // 手动运动步长
 }S_MOTOR_PARAM;
 /*--------------- 函数定义 --------------*/
 void Command_tcp_client(void);

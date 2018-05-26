@@ -414,6 +414,7 @@ void i32toa(uint32_t n,char *str, uint8_t* len)
   {
     str[i] = tempr[*len - 1 - i];
   }
+  str[*len] = 0;
 }
 /**
 *@function uint32_t atoi32(char *str)

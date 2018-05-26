@@ -283,8 +283,6 @@
     </CustomFolders>
     <Files AutoFolders="PackageView">
         <Folder Name="../Interfaces">
-            <F N="../Interfaces/interfaces_bottom.c"/>
-            <F N="../Interfaces/interfaces_bottom.h"/>
             <F N="../Interfaces/malloc.c"/>
             <F N="../Interfaces/malloc.h"/>
             <F N="../Interfaces/tcp_demo.c"/>
@@ -377,6 +375,8 @@
             <F N="../User/App/app_gpio.h"/>
             <F N="../User/App/app_pt100.c"/>
             <F N="../User/App/app_pt100.h"/>
+            <F N="../User/App/app_system.c"/>
+            <F N="../User/App/app_system.h"/>
             <F N="../User/App/app_tcp.c"/>
             <F N="../User/App/app_tcp.h"/>
             <F N="../User/App/app_uart.c"/>
@@ -385,6 +385,8 @@
         <Folder Name="../User/Bfm">
             <F N="../User/Bfm/bfm_18B20.c"/>
             <F N="../User/Bfm/bfm_18B20.h"/>
+            <F N="../User/Bfm/bfm_socket.c"/>
+            <F N="../User/Bfm/bfm_socket.h"/>
             <F N="../User/Bfm/bfm_w5500.c"/>
             <F N="../User/Bfm/bfm_w5500.h"/>
         </Folder>
@@ -401,7 +403,6 @@
             <F N="../User/Main/stm32f10x_it.h"/>
             <F N="../User/Main/system_stm32f10x.c"/>
             <F N="../User/Main/system_stm32f10x.h"/>
-            <F N="../User/Main/tcp_demo.h"/>
         </Folder>
         <Folder Name="../User/Ocp">
             <F N="../User/Ocp/ocp_adc.c"/>

@@ -35,7 +35,7 @@ void gpio_paramter_config(void)
                            PCPin PCPin PCPin PCPin
                            PCPin PCPin */
   GPIO_InitStruct.GPIO_Pin = LED_SYS_Pin|W5500_RSTN_Pin|LED_RUN_Pin
-                          |POWER_IMU_Pin|MOTOR_ENABLE_Pin|POWER_ROUTE_Pin
+                             | POWER_IMU_Pin | MOTOR_ENABLE_Pin | MOTOR_HOMING_Pin| POWER_ROUTE_Pin
                           |POWER_FAN1_Pin|POWER_FAN2_Pin;
   GPIO_InitStruct.GPIO_Mode = GPIO_Mode_Out_PP;
   GPIO_InitStruct.GPIO_Speed = GPIO_Speed_2MHz;

@@ -152,6 +152,7 @@ void task_tcp_init(void)
 {
   _TaskTcp.fun = task_tcp;
   _TaskTcp.state = TASK_STATE_RUN;
+  setRTR(50);
 }
 /**
 *@function void task_tcp(void)
@@ -196,6 +197,7 @@ uint8_t robot_rx_date_coversion(ROBOCmd_TypeDef *sRobotCmd)
         i32toa(sRobotCmd->EndPosition * MOTOR_COUNTS_POSITION, sMotorParam_.endPosition, &len); // 结束位置
         i32toa(sRobotCmd->TargetPosition * MOTOR_COUNTS_POSITION, sMotorParam_.targetPosition, &len); // 目标位置
         sMotorParam_.step = sRobotCmd->Step ;                              // 步长
+        sMotorParam_.runCount = sRobotCmd->RunCount;
         sMotorParam_.eWorkMode = get_robot_run_mode(sRobotCmd->WorkMode);  // 工作模式
       }
       else if ((sMotorParam_.eComand == Robot_CMD_Auto)  //stop状态可切换状态
@@ -234,14 +236,14 @@ void robot_tx_data_conversion(S_ROBOT_STATUS *sStatus)
   ROBOStatus_TypeDef recRobotStatus;
   set_robot_command(sStatus->runStatus,recRobotStatus.RunStatus); // 上传状态
   strcpy( recRobotStatus.CurrentTime ,"2017-10-13 17:27:30\0");    // 上传时间
-  recRobotStatus.CurrentPositiont = motorStatus_[0];              // 上传当前位置
-  recRobotStatus.CurrentSpeed = atoin32(sStatus->CurrentSpeed,0); // 上传当前速度
+  recRobotStatus.CurrentPositiont = motorStatus_[0]/MOTOR_COUNTS_POSITION;    // 上传当前位置
+  recRobotStatus.CurrentSpeed = motorStatus_[3] / MOTOR_COUNTS_VELOCITY; // 上传当前速度
   recRobotStatus.RunningCount = (sStatus->RunningCount/2);        // 上传巡检次数
   recRobotStatus.CurrentTemp = sStatus->CurrentTemp;              // 上传当前温度
-  recRobotStatus.CurrentVoltage = (float)(sStatus->CurrentVoltage / 100); // 上传当前电池电压
-  recRobotStatus.CurrentAmp = (float)(sStatus->CurrentAmp/100);           // 上传当前电池电流
+  recRobotStatus.CurrentVoltage = ((float)(sStatus->CurrentVoltage) / 100); // 上传当前电池电压
+  recRobotStatus.CurrentAmp = ((float)(sStatus->CurrentAmp)/100);           // 上传当前电池电流
   recRobotStatus.CurrentDir = sStatus->CurrentDir;                        // 上传当前运动向
-  recRobotStatus.ControlSystemEnergy = (float)(sStatus->ControlSystemEnergy/100); // 上传当前电池电量
+  recRobotStatus.ControlSystemEnergy = (float)(sStatus->ControlSystemEnergy); // 上传当前电池电量
   recRobotStatus.DynamicSystemEnergy = recRobotStatus.ControlSystemEnergy;        // 上传当前电池电量
   send_robot_status_data(&recRobotStatus);
 }

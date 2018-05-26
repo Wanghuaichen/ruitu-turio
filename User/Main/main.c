@@ -34,13 +34,13 @@ int main (void)
   w5500_config_ip(&sDefaultNetConfig_, W5500_WRITE_PARAMETER);
   w5500_config_macAddress(&sDefaultNetConfig_, W5500_WRITE_PARAMETER);
  // w5500_config_subnetMask(&sDefaultNetConfig_, W5500_WRITE_PARAMETER);
-////  /* Initilaize the LwIP satck */
   socket_buf_init(txsize, rxsize);    /*初始化8个Socket的发送接收缓存大小*/
-
- SetMotor(ENABLE);
- task_init();
+  control_init();
+  task_init();
+  SetMotor(ENABLE);
   while(1)
   {
+    
       task_run();
   }
 }

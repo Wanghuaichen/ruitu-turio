@@ -15,8 +15,8 @@ uint16_t count=0;//命令socket函数调用次数
 uint16_t count2=0;//状态socket函数调用次数
 uint16_t count3=0;
 uint16_t local_port = 502;
-uint16_t remote_port =  502;
-uint8_t remote_ip[4] = {192,168,1,103};
+uint16_t remote_port =  8888;
+uint8_t remote_ip[4] = {192,168,1,106};
  char  cJSON_FORMAT_Buf[350];//接收或者转化的cJSON字符串的结果放在这个缓存里面,使用static表示只能在本文件内部使用此变量！
  char  Sever_FORMAT_Buf[350];//接收或者待发送的服务器识别的字符串格式的结果放在这个缓存里面
 
@@ -32,6 +32,7 @@ uint8_t remote_ip[4] = {192,168,1,103};
 ROBOStatus_TypeDef ROBOStatus_TypeDefStructure;//上传给上位机的状态结构体，全局变量
 ROBOCmd_TypeDef Cmd_From_Server;//接收到的命令
 Hello_Ack_TypeDef Ack_From_Server;//反馈的ack命令，携带ID号码以及时间字符
+Command_Ack_TypeDef Command_Ack_TypeDefStructure;//response "Set OK"
 Hello_TypeDef Status_Hello_TypeStructure={"Robot001","RobotStatus"};//状态结构体，用于初始化的时候发送给服务器
 Hello_TypeDef Command_Hello_TypeStructure={"Robot001","RobotCommand"};//
 
@@ -125,8 +126,11 @@ void Status_tcp_client2(void)
 			{
 				Trans_to_ServerFormat(Sever_FORMAT_Buf,HelloStatusCommand_to_cJSON( cJSON_FORMAT_Buf,Status_Hello_TypeStructure));				
 				send(SOCK_TCPC2,(uint8_t *)Sever_FORMAT_Buf,strlen(Sever_FORMAT_Buf));		
+        _TaskBattery.interval = 1000;
+        _TaskBattery.state    = TASK_STATE_DELAY;
 				break;         
 			}
+      if (count2 > 3)
       count2 = 3;										     
 		  break;
 			
@@ -183,7 +187,7 @@ strcat的拼接方法
 		strcat(result,"#####");
 		strcpy(room,result);
 		myfree(result);
-	return room;
+	 return room;
 }
 
 	char * Trans_to_ServerFormat2(char *room,char data[])
@@ -401,7 +405,15 @@ CommandType GetCommandFromServer(char * JsonDataFromSocket)
 							else
 								{
 												//printf("Command is %s\r\n", robocmd.Command->valuestring);
-												 strcpy(Cmd_From_Server.Command,json_cmd.Command->valuestring);
+												  strcpy(Cmd_From_Server.Command,json_cmd.Command->valuestring);
+                    if(strcmp(Cmd_From_Server.Command,"Auto")==0||strcmp(Cmd_From_Server.Command,"Set")==0||strcmp(Cmd_From_Server.Command,"Dot")==0)
+                    {
+                          strcpy(Command_Ack_TypeDefStructure.Command,json_cmd.Command->valuestring);
+                          strcpy(Command_Ack_TypeDefStructure.Result,"OK");
+                          Trans_to_ServerFormat(Sever_FORMAT_Buf,CommandAck_to_cJSON( cJSON_FORMAT_Buf,Command_Ack_TypeDefStructure));
+                          send(SOCK_TCPC,(uint8_t *)Sever_FORMAT_Buf,strlen(Sever_FORMAT_Buf));//注意此处是SOCK_TCPC			
+                    }
+
 								}
 							//速度指令
 							json_cmd.Speed=cJSON_GetObjectItem(command_root,"Speed");
@@ -417,7 +429,7 @@ CommandType GetCommandFromServer(char * JsonDataFromSocket)
 								}
 							
 								//运行次数
-								json_cmd.RunCount = cJSON_GetObjectItem(command_root,"RunCount");
+								json_cmd.RunCount = cJSON_GetObjectItem(command_root,"RunTime");
 							if(!json_cmd.RunCount) 
 								{ 
 									//printf("no RunCount!\n"); 
@@ -492,7 +504,7 @@ CommandType GetCommandFromServer(char * JsonDataFromSocket)
 								
 								
 								cmdtype= COMMAND;
-								
+								robot_rx_date_coversion(& Cmd_From_Server);
 						} 
 			 }
 
@@ -527,7 +539,7 @@ cJSON_Delete(root);
 			 
 //Delete_HelloJSON_Ack_TypeDef(&json_ack);
 //Delete_RobotJSON_CMD_TypeDef(&json_cmd);
-robot_rx_date_coversion(& Cmd_From_Server);
+
 return cmdtype;
 }
 

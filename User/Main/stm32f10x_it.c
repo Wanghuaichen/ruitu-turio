@@ -240,6 +240,7 @@ void USB_LP_CAN1_RX0_IRQHandler(void)
     CAN_Receive(CAN1,CAN_FIFO0,&sCan1Buf_.rxMsg[sCan1Buf_.top++]);                    /* 获取发数据                */
     if ( sCan1Buf_.top >= CAN_BUF_LENGTH)
       sCan1Buf_.top = 0;
+    
   }
 }
 /**

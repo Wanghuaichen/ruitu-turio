@@ -77,7 +77,7 @@ typedef union
 #include "app_tcp.h"
 #include "app_gpio.h"
 #include "app_pt100.h"
-
+#include "app_system.h"
 
 #include "api_dataPro.h"
 #include "api_motor.h"

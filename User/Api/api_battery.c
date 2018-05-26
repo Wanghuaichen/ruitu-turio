@@ -124,7 +124,7 @@ uint16_t crc16(uint8_t* puchMsg, uint16_t usDataLen)
 void battery_tx_processing(uint8_t addr,uint8_t funCode, uint8_t regAddr)
 {
   uint16_t crcData = 0;
-  uint8_t sendData[9];
+  uint8_t sendData[10];
   sendData[0] = addr;
   sendData[1] = funCode;
   sendData[2] = 0x00;
@@ -134,7 +134,7 @@ void battery_tx_processing(uint8_t addr,uint8_t funCode, uint8_t regAddr)
   crcData = crc16(sendData,6);
   sendData[7] = (uint8_t)(crcData & 0xFF);
   sendData[6] = (uint8_t)((crcData >> 8) & 0xFF);
-  Circle_Write_Data(&sUart1TxCircleBuf_,sendData,9);
+  Circle_Write_Data(&sUart1TxCircleBuf_,sendData,10);
 
 }
 /**
@@ -159,6 +159,8 @@ void battery_rx_processing(uint8_t *buf, uint16_t len)
     else if (queryRegAddr_ == BATTERY_REG_CURRENT) // 读电流
     {
       sBattery_.batteryCurrent = ((buf[3] << 8) & 0xFF00) + (buf[4] & 0xFF);
+      if (sBattery_.batteryCurrent &0x80)
+        sBattery_.batteryCurrent = (0xFFFF- sBattery_.batteryCurrent);
     }
     batteryStateFlag_ |= BATTERY_FLAG_GET_PARAM; // 读到数据标志
   }
@@ -184,8 +186,7 @@ void task_battery_init(void)
 {
   _TaskBattery.fun = task_battery;
   batteryStateFlag_ |= BATTERY_FLAG_GET_PARAM;
-  _TaskBattery.state    = TASK_STATE_RUN;
-  sRobotStatus_.runStatus = Robot_CMD_Stop;
+
 }
 /**
 *@function void task_battery(void)
@@ -214,6 +215,7 @@ void task_battery(void)
   sRobotStatus_.ControlSystemEnergy = sBattery_.batteryPercent;
   sRobotStatus_.DynamicSystemEnergy = sBattery_.batteryPercent;
   robot_tx_data_conversion(&sRobotStatus_);
+
 }
 
 

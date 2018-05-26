@@ -18,6 +18,8 @@
 void task_can_rx_init(void);
 void task_can_rx(void);
 void can_rx_data_processing(uint8_t comType, CanRxMsg *rxMsg);
+void task_motor_can(void);
+void task_motor_can_init(void);
 #endif
 
 

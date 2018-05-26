@@ -44,6 +44,13 @@ void param_default_set(void)
   segmentNum_ = 0;      // 段数，未使用，表示robot所处轨道位置
   irLocationNum_ = 0;   // 经过轨道孔时，定位传感器记录的经过距离
   homingDistance_ = 28; // 回零点距离，孔距超过此值，即进行发送回零信号
+  // 定义电机上电时状态
+  sRobotStatus_.runStatus = Robot_CMD_Homing;
+  strcpy(sMotorParam_.homeOffset, "26000");
+  strcpy(sMotorParam_.homeSlowSpeed, "90000");
+  strcpy(sMotorParam_.homeFastSpeed, "90000");
+  strcpy(sMotorParam_.PositionAccelerated, "50");
+  strcpy(sMotorParam_.PositionDecelerated, "50");
 }
 
 /*********************************************************************************************************

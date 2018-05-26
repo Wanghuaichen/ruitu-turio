@@ -26,6 +26,7 @@ void task_uart_rx_init(void)
   memset(&uart3RxBuf_, 0, sizeof(uart3RxBuf_));
   Circle_Creat_Buffer(&sUart3RxCircleBuf_, uart3RxBuf_, UART3_BUF_LEN); // 创建缓冲区格式
   _TaskUartRx.state = TASK_STATE_RUN;
+  rs485_select_tx_rx(RS485_RX);
 }
 /**
 *@function void task_uart_rx(void)
@@ -45,6 +46,9 @@ void task_uart_rx(void)
     _TaskUartRx.info &= ~(UART3_RX_DATA);
     Circle_Read_Data(&sUart3RxCircleBuf_, rxData, &len);
     motor_rx_data_processing((char*)rxData, len);
+#ifdef COM_LOOP_BACK_ENABLE
+    Circle_Write_Data(&sUart3TxCircleBuf_,rxData,len+1); //回环测试
+#endif
   }
   // 串口3是否接收到数据
   if (_TaskUartRx.info & UART1_RX_DATA)
@@ -52,6 +56,9 @@ void task_uart_rx(void)
     _TaskUartRx.info &= ~(UART1_RX_DATA);
     Circle_Read_Data(&sUart1RxCircleBuf_, rxData, &len);
     battery_rx_processing(rxData, len);
+#ifdef COM_LOOP_BACK_ENABLE
+    Circle_Write_Data(&sUart1TxCircleBuf_,rxData,len+1);
+#endif
 //    Circle_Read_Data(&sUart1RxCircleBuf_, cteRxData_, &cteRxLen);
 //    CTE_RX_Data_Pro(cteRxData_, cteRxLen, COM_TYPE_AORB);
   }

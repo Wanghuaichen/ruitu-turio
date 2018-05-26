@@ -118,17 +118,30 @@ void control_imu_power(uint8_t onoff)
     GPIO_ResetBits(POWER_IMU_GPIO_Port, POWER_IMU_Pin);
 }
 /**
-*@function void control_motort_enable(uint8_t onoff)
+*@function void control_motor_enable(uint8_t onoff)
 *@brief    电机输出使能控制
 *@param    onoff ：OUT_CONTROL_ON/OUT_CONTROL_OFF
 *@return   无
 */
-void control_motort_enable(uint8_t onoff)
+void control_motor_enable(uint8_t onoff)
 {
   if (onoff == OUT_CONTROL_ON)
     GPIO_SetBits(MOTOR_ENABLE_GPIO_Port, MOTOR_ENABLE_Pin);
   else
     GPIO_ResetBits(MOTOR_ENABLE_GPIO_Port, MOTOR_ENABLE_Pin);
+}
+/**
+*@function void control_motor_homing(uint8_t onoff)
+*@brief    控制电机回零信号输出
+*@param    onoff ：OUT_CONTROL_ON/OUT_CONTROL_OFF
+*@return   无
+*/
+void control_motor_homing(uint8_t onoff)
+{
+  if (onoff == OUT_CONTROL_ON)
+    GPIO_SetBits(MOTOR_HOMING_GPIO_Port, MOTOR_HOMING_Pin);
+  else
+    GPIO_ResetBits(MOTOR_HOMING_GPIO_Port, MOTOR_HOMING_Pin);
 }
 /**
 *@function void control_lidar_power(uint8_t onoff)
@@ -194,7 +207,6 @@ void control_battery_led(uint8_t onoff)
   if (onoff == OUT_CONTROL_BLINKING)
     ledBlinkingFlag_ |= LED_BATTERY_BLINKING;
   else if (onoff == OUT_CONTROL_ON)
-  if (onoff == OUT_CONTROL_ON)
     GPIO_SetBits(LED_BATTERY_GPIO_Port, LED_BATTERY_Pin);
   else
     GPIO_ResetBits(LED_BATTERY_GPIO_Port, LED_BATTERY_Pin);
@@ -248,20 +260,21 @@ void control_blinking(void)
 void control_init(void)
 {
   ledBlinkingFlag_ = 0;
-  control_battery_led(ON);
-  control_ethernet_led(ON);
-  control_fan1_power(ON);
-  control_fan2_power(ON);
-  control_imu_power(ON);
-  control_left_oas_led(ON);
-  control_lidar_power(ON);
-  control_motort_enable(ON);
-  control_reserved_out1(ON);
-  control_reserved_out2(ON);
-  control_reserved_out3(ON);
-  control_right_oas_led(ON);
-  control_run_led(ON);
-  control_route_power(ON);
+//  control_battery_led(OUT_CONTROL_ON);
+//  control_ethernet_led(OUT_CONTROL_ON);
+//  control_fan1_power(OUT_CONTROL_ON);
+//  control_fan2_power(OUT_CONTROL_ON);
+//  control_imu_power(OUT_CONTROL_ON);
+//  control_left_oas_led(OUT_CONTROL_ON);
+//  control_lidar_power(OUT_CONTROL_ON);
+//  control_motor_enable(OUT_CONTROL_ON);
+//  control_motor_homing(OUT_CONTROL_ON);
+//  control_reserved_out1(OUT_CONTROL_ON);
+//  control_reserved_out2(OUT_CONTROL_ON);
+//  control_reserved_out3(OUT_CONTROL_ON);
+//  control_right_oas_led(OUT_CONTROL_ON);
+//  control_run_led(OUT_CONTROL_ON);
+  control_route_power(OUT_CONTROL_ON);
 }
 
 /*-------------------  电源控制 -------------------------------*/
@@ -459,7 +472,7 @@ void task_sensors(void)
       segmentNum_--;
     }
     irLocationNum_ = 0;
-    RSV_OUT1_GPIO_Port->BRR = RSV_OUT1_Pin;
+    MOTOR_HOMING_GPIO_Port->BRR = MOTOR_HOMING_Pin;
     irLocationNum_ =  0;
   }
 }

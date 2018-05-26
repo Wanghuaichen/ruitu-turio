@@ -23,6 +23,8 @@ void task_init(void)
   task_add(taskID_++, &_TaskBattery, task_battery_init);
   task_add(taskID_++, &_TaskSensors, task_sensors_init );
   task_add(taskID_++, &_TaskCanRx, task_can_rx_init);
+  task_add(taskID_++, &_TaskMotorCan, task_motor_can_init);
+  task_add(taskID_++, &_TaskSystem, task_system_init);
   task_add(taskID_++, &_TaskTcp, task_tcp_init);
   task_add(taskID_++, &_TaskIdle, task_idle_init);
 }

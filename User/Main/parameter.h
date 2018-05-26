@@ -22,6 +22,10 @@
 #define _PARAMETER_H_
 #include "include.h"
 
+
+
+/*------------------- 选择性宏定义 -------------------------------*/
+//#define COM_LOOP_BACK_ENABLE      // 定义是否进行回环测试
 /*--------任务命令宏定义----------------*/
 // 通信类型宏定义，根据此定义判断不同接口接收的数据
 #define COM_TYPE_RS485             1 // 使用485接口通信时通信类型
@@ -141,6 +145,7 @@ EXT_GLOBAL uint8_t         batteryStateFlag_;  // 232 接收数据定义
 /*------------------- 电机控制任务相关定义 -------------------------------*/
 EXT_GLOBAL sTASK           _TaskMotorControl;
 EXT_GLOBAL sTASK           _TaskMotorState;
+EXT_GLOBAL sTASK           _TaskMotorCan;
 EXT_GLOBAL char            recMotorStatus_[10][11];
 EXT_GLOBAL uint32_t        motorStatus_[10];
 EXT_GLOBAL uint8_t         motorMode_;
@@ -153,6 +158,8 @@ EXT_GLOBAL S_ROBOT_STATUS  sRobotStatus_;
 EXT_GLOBAL sTASK           _TaskRead18B20;
 /*------------------- 传感器处理 -------------------------------*/
 EXT_GLOBAL sTASK           _TaskSensors;
+/*------------------- 系统处理 -------------------------------*/
+EXT_GLOBAL sTASK           _TaskSystem;
 /*********************************************************************************************************
 **                                        End Of File
 *********************************************************************************************************/

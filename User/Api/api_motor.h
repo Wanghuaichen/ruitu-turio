@@ -108,7 +108,9 @@ void motor_start_node(void);
 void motor_stop_node(void);
 void motor_set_syn_cycle(void);
 void motor_start_syn(void);
-uint8_t motor_get_state(uint8_t *buf,uint8_t len);
+//uint8_t motor_get_state(uint8_t *buf,uint8_t len);
+
+void motor_get_state(void);
 uint8_t motor_set_position(uint32_t position);
 uint8_t motor_set_velocity(uint32_t velocity);
 void motor_start_position_mode(void);

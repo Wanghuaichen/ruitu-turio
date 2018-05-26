@@ -20,8 +20,6 @@ const char setPosition[] = "i r3 " ; // 设置位置值-在r3后面拼接位置值的字符串
 const char setVelocity[] = "i r4 " ; // 设置速度值-在r3后面拼接速度值的字符串
 const char readReg[] = "g r0xa0\n "; //
 char rs232RxData[11];
-char startP[] = "0";
-char endP[] = "-300000";
 char *runP;
 /**
 *@function void motor_start_node(void)
@@ -73,29 +71,42 @@ void motor_start_syn(void)
   id = SYNCHRONIZATION_START_ID | DEVICE_ID;
   can_tx_data_package(CAN1, motorDataStartSyn, 8, id, CAN_RTR_DATA);
 }
+//  /**
+//  *@function uint8_t motor_get_state(uint8_t *buf, uint8_t len)
+//  *@brief    获取电机状态，
+//  *@param    buf：返回状态数据
+//  *@param    len：返回数据的长度
+//  *@return   1 ：获取状态成功 0：获取状态失败
+//  *@date     2018/5/14
+//  */
+//  uint8_t motor_get_state(uint8_t *buf,uint8_t len)
+//  {
+//    uint32_t i = 0,id;
+//    id = NMT_NODE_GUARDING_ID | DEVICE_ID;
+//    canRxFlag_ &= ~CANOPNE_GET_NODE_STATE;
+//    can_tx_data_package(CAN1, motorDataNull, 8, id, CAN_RTR_REMOTE);
+//    while (++i < 0xffff)
+//    {
+//      if (canRxFlag_ & CANOPNE_GET_NODE_STATE == CANOPNE_GET_NODE_STATE)
+//      {
+//        memcpy( buf,canRxData_,len);
+//        return 1;
+//      }
+//    }
+//    return 0;
+//  }
+
 /**
-*@function uint8_t motor_get_state(uint8_t *buf, uint8_t len)
-*@brief    获取电机状态，
-*@param    buf：返回状态数据
-*@param    len：返回数据的长度
-*@return   1 ：获取状态成功 0：获取状态失败
-*@date     2018/5/14
+*@function void motor_get_state(void)
+*@brief    获取电机状态。通过can端口
+*@return   无
 */
-uint8_t motor_get_state(uint8_t *buf,uint8_t len)
+void motor_get_state(void)
 {
-  uint32_t i = 0,id;
+  uint32_t id;
   id = NMT_NODE_GUARDING_ID | DEVICE_ID;
   canRxFlag_ &= ~CANOPNE_GET_NODE_STATE;
   can_tx_data_package(CAN1, motorDataNull, 8, id, CAN_RTR_REMOTE);
-  while (++i < 0xffffff)
-  {
-    if (canRxFlag_ & CANOPNE_GET_NODE_STATE == CANOPNE_GET_NODE_STATE)
-    {
-      memcpy( buf,canRxData_,len);
-      return 1;
-    }
-  }
-  return 0;
 }
 /**
 *@function uint8_t motor_set_position(uint32_t position)
@@ -157,10 +168,11 @@ void motor_start_position_mode(void)
 void task_motor_control_init(void)
 {
   _TaskMotorControl.fun = task_motor_control;
+
   rs232RxFlag_ |= RS232_SET_MOTOR_PARAM;
   motorPauseFlag_ = MOTOR_PAUSE_PUT_RIGHT;
-  eMotorControlMode_ = Robot_CMD_Homing;
-  runP = endP;
+  runP = sMotorParam_.endPosition;
+
 }
 /**
 *@function void task_motor_control(void)
@@ -170,7 +182,8 @@ void task_motor_control_init(void)
 void task_motor_control(void)
 {
   E_MOTOR_STATE sTempMotor;
-  uint8_t recFalg;
+  static uint8_t completeDelay = 0;
+  uint8_t recFalg = 0;
   uint8_t bar = TASK_BAR_CMD;
   _TaskMotorControl.interval = 100;
   _TaskMotorControl.state = TASK_STATE_DELAY;
@@ -202,37 +215,38 @@ void task_motor_control(void)
       recFalg = motor_mode_control(&sTempMotor);
      if (recFalg == 1) // 发送完成
       {
+        completeDelay = 0; // 重新赋值
         _TaskMotorControl.progressBar++;
         _TaskMotorState.state = TASK_STATE_RUN;
       }
     }
-//  if ((eMotorControlMode_ == Robot_CMD_Homing)
-//      && (motorFlag_ & MOTOR_STATE_HOMING_STATE)
-//      && (motorFlag_ & MOTOR_STATE_MOVE_COMPLETE)) // 回零完成，进入位置状态
-//  {
-//    eMotorControlMode_ = Robot_CMD_Auto;
-//    _TaskMotorControl.progressBar = 0;
-//  }
-    if (motorFlag_ & MOTOR_STATE_MOVE_COMPLETE) // 动动完成
+    else if (motorFlag_ & MOTOR_STATE_MOVE_COMPLETE)   // 运动完成，注意需要是在没有任务暂停标志置位的基础上运动完成，暂时是也会置运动完成标志
     {
-      _TaskMotorControl.state = TASK_STATE_SLEEP;
-      if ((sRobotStatus_.runStatus == Robot_CMD_Backward) || (sRobotStatus_.runStatus == Robot_CMD_Forward))
-        sRobotStatus_.runStatus = Robot_CMD_Jog;  //回到手动模式
-      else if ((strcmp(runP,recMotorStatus_[0]) == 0)
-                && (sRobotStatus_.runStatus == Robot_CMD_Auto))
+      if (completeDelay++ > 10)  // 延时处理 ，因为停止的原因可能是避障开关或者使能开关等待一段时间去读使能标志
       {
-        if (++sRobotStatus_.RunningCount < (sMotorParam_.runCount * 2))
+        _TaskMotorControl.progressBar = 0;
+        _TaskMotorControl.state = TASK_STATE_SLEEP;
+        if ((sRobotStatus_.runStatus == Robot_CMD_Backward) || (sRobotStatus_.runStatus == Robot_CMD_Forward))
+          sRobotStatus_.runStatus = Robot_CMD_Jog;  //回到手动模式
+        else if ((strcmp(runP,recMotorStatus_[0]) == 0)
+                  && (sRobotStatus_.runStatus == Robot_CMD_Auto))
         {
-          if (runP == sMotorParam_.startPosition)
-            runP = sMotorParam_.endPosition;
+           if (runP == sMotorParam_.startPosition)
+              runP = sMotorParam_.endPosition;
+            else
+              runP = sMotorParam_.startPosition;
+          if (++sRobotStatus_.RunningCount < (sMotorParam_.runCount * 2))
+            _TaskMotorControl.state = TASK_STATE_RUN;
           else
-            runP = sMotorParam_.startPosition;
-          _TaskMotorControl.progressBar = 0;
-          _TaskMotorControl.state = TASK_STATE_RUN;
+            sRobotStatus_.runStatus = Robot_CMD_Stop;
         }
+        else if ((sRobotStatus_.runStatus == Robot_CMD_Homing)
+          ||(sRobotStatus_.runStatus == Robot_CMD_Dot))
+          sRobotStatus_.runStatus = Robot_CMD_Stop;
+        else
+          ;
+        completeDelay = 0; // 重新赋值
       }
-      else
-        ;
     }
 
   }
@@ -246,7 +260,7 @@ void task_motor_control(void)
       else if (sRobotStatus_.runStatus == Robot_CMD_Homing)
         sTempMotor = Robot_CMD_HomingStart;
       recFalg = motor_mode_control(&sTempMotor);
-      if (recFalg == 1) // 发送完成
+      if (recFalg == 1)
       {
         _TaskMotorControl.progressBar--;
         _TaskMotorState.state = TASK_STATE_RUN;
@@ -283,7 +297,7 @@ void task_motor_state(void)
       case 3: gerReg = MOTOR_REG_GET_ACTUAL_VELOCITY;break;
       default:break;
   }
-  _TaskMotorState.interval = 100;
+  _TaskMotorState.interval = 50;
   _TaskMotorState.state = TASK_STATE_DELAY;
 
   if (_TaskMotorState.progressBar == bar++)
@@ -315,7 +329,7 @@ void motor_state_Processing(void)
   motorStatus_[1] = atoin32(recMotorStatus_[1],0);
   motorStatus_[2] = atoin32(recMotorStatus_[2],0);
   motorStatus_[0] = atoin32(recMotorStatus_[0],0);
-  motorStatus_[3] = atoin32(recMotorStatus_[0],0);
+  motorStatus_[3] = atoin32(recMotorStatus_[3],0);
   // 判断电机enable脚状态
   if (motorStatus_ [1] & MOTOR_REG_STATUS_ENABLE_NOT_ACTIVE)
     motorPauseFlag_ |= MOTOR_PAUSE_ENABLE_NOT_ACTIVE;
@@ -331,7 +345,6 @@ void motor_state_Processing(void)
     motorFlag_ &= ~MOTOR_STATE_HOMING_STATE;
   if (motorStatus_[2] & MOTOR_REG_STATUS_HOMING_SUCCESSFULLY) // 成功
     motorFlag_ |= MOTOR_STATE_HOMING_STATE;
-
 }
 /**
 *@function uint8_t motor_tx_data_processing(char ins, char *reg, uintbuf, uint16_t len)
@@ -436,11 +449,11 @@ uint8_t motor_mode_control_homing(uint8_t step)
 {
   switch (step)
   {
-      case 0: motor_tx_data_processing( 's', MOTOR_REG_SET_HOME_HOMING_METHOD,"513",1);break;
-      case 1: motor_tx_data_processing( 's', MOTOR_REG_SET_HOME_SLOW_VELOCITY,"40000",2);break;
-      case 2: motor_tx_data_processing( 's', MOTOR_REG_SET_HOME_FAST_VELOCITY,"40000",2);break;
-      case 3: motor_tx_data_processing( 's', MOTOR_REG_SET_HOME_OFFSET,"-26000",1);break;
-      case 4: motor_tx_data_processing( 's', MOTOR_REG_SET_DESIRED_STATE,"21",1);break;
+      case 0: motor_tx_data_processing( 's', MOTOR_REG_SET_HOME_HOMING_METHOD,"529", 1);break; // 513撞正向开关 529撞负向开关
+      case 1: motor_tx_data_processing( 's', MOTOR_REG_SET_HOME_SLOW_VELOCITY,sMotorParam_.homeSlowSpeed, 1);break;
+      case 2: motor_tx_data_processing('s', MOTOR_REG_SET_HOME_FAST_VELOCITY, sMotorParam_.homeFastSpeed, 1); break;
+      case 3: motor_tx_data_processing( 's', MOTOR_REG_SET_HOME_OFFSET,sMotorParam_.homeOffset, 1);break;
+      case 4: motor_tx_data_processing( 's', MOTOR_REG_SET_DESIRED_STATE,"21", 1);break;
       case 5:
       {
         rs232RxFlag_ &= ~RS232_SET_MOTOR_PARAM;
@@ -468,13 +481,13 @@ uint8_t motor_mode_control_position(uint8_t step, E_MOTOR_STATE mode)
     runP = sMotorParam_.targetPosition;
   else if (mode == Robot_CMD_Forward)
   {
-     position = (motorStatus_[0] + sMotorParam_.step);
+     position = (motorStatus_[0] + (sMotorParam_.step * MOTOR_COUNTS_POSITION));
     i32toa(position, stepTarget, &len);
     runP = stepTarget;
   }
   else if (mode == Robot_CMD_Backward)
   {
-     position = (motorStatus_[0] - sMotorParam_.step);
+     position = (motorStatus_[0] - (sMotorParam_.step * MOTOR_COUNTS_POSITION));
     i32toa(position, stepTarget, &len);
     runP = stepTarget;
   }
@@ -599,18 +612,18 @@ void SetMotor(uint8_t state)
     GPIO_SetBits(MOTOR_ENABLE_GPIO_Port, MOTOR_ENABLE_Pin);
 }
 
-/**
-*@function uint8_t GetMotorState(uint8_t *buf, uint8_t len)
-*@brief    获取电机状态,
-*@param    buf:状态数据
-*@param    len:状态数据长度
-*@return   1:成功 0:失败
-*@date     2018/5/14
-*/
-uint8_t GetMotorState(uint8_t *buf,uint8_t len)
-{
-  return motor_get_state(buf,len);
-}
+///**
+//*@function uint8_t GetMotorState(uint8_t *buf, uint8_t len)
+//*@brief    获取电机状态,
+//*@param    buf:状态数据
+//*@param    len:状态数据长度
+//*@return   1:成功 0:失败
+//*@date     2018/5/14
+//*/
+//uint8_t GetMotorState(uint8_t *buf,uint8_t len)
+//{
+//  return motor_get_state(buf,len);
+//}
 /*********************************************************************************************************
 **                                        End Of File
 *********************************************************************************************************/
